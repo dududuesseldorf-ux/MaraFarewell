@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farewell Memories | Begin the Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-viewport {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            background: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.85)), 
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920') center/cover no-repeat;
+        }
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: 3.8rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .hero-content h1 span { font-style: italic; color: var(--gold); }
+        .hero-content p { font-size: 1.3rem; letter-spacing: 2px; margin-bottom: 40px; color: var(--gray); }
+        .btn-entry {
+            display: inline-block;
+            padding: 16px 36px;
+            border: 1px solid var(--gold);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 30px;
+            letter-spacing: 1.5px;
+            font-size: 0.95rem;
+            transition: all 0.4s ease;
+        }
+        .btn-entry:hover {
+            background: var(--gold);
+            color: var(--bg-dark);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="hero-viewport">
+        <div class="hero-content">
+            <h1>Every ending<br>creates beautiful <span>memories.</span></h1>
+            <p>Thank you for everything.</p>
+            <a href="gallery.html" class="btn-entry">Begin the Journey</a>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-Month Chronicle | Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .wishing-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .note-card {
+            background: #FFFFFF;
+            border-top: 3px solid var(--gold);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.04);
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .note-card:hover { transform: translateY(-5px); }
+        .heart-stamp {
+            color: rgba(239, 68, 68, 0.12);
+            font-size: 2.5rem;
+            position: absolute; top: 25px; right: 25px;
+        }
+        .note-body {
+            font-size: 1.05rem; line-height: 1.7;
+            color: #1E293B; font-style: italic; margin-bottom: 25px;
+        }
+        .note-signer {
+            font-family: var(--font-heading);
+            font-weight: 600; color: #0F172A; font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="floating-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="videos.html" class="nav-link">Videos</a>
+        <a href="streak.html" class="nav-link">Daily Journal</a>
+        <a href="messages.html" class="nav-link active">Messages</a>
+    </nav>
+
+    <header class="page-header">
+        <h1>Letters For The Road</h1>
+        <p class="page-subtitle">Open these notes whenever you need a little reminder of home over the next 9 months.</p>
+    </header>
+
+    <main class="content-container">
+        <div class="wishing-wall">
+            <div class="note-card">
+                <div class="heart-stamp"><i class="fas fa-heart"></i></div>
+                <p class="note-body">"9 months is going to fly by so quickly! Make sure to take loads of pictures, don't work too hard, and remember we are throwing a massive welcome-back party the second you step off the plane."</p>
+                <div class="note-signer">— Sarah</div>
+            </div>
+            <div class="note-card">
+                <div class="heart-stamp"><i class="fas fa-heart"></i></div>
+                <p class="note-body">"Wishing you the grandest adventure out there. Things won't be quite the same in the room without your jokes, but we are all so incredibly proud of you!"</p>
+                <div class="note-signer">— John</div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

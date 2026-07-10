@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-Month Keepsake | Memory Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500&family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #FAF7F2;
+            min-height: 4000vh; /* Extremely deep scroll window to ensure all photos pass perfectly */
+            overflow-x: hidden;
+        }
+
+        #stage-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: auto; 
+            z-index: 1; 
+        }
+
+        #universe-3d-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .header-safe-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100000; 
+            pointer-events: none;
+            background: linear-gradient(to bottom, #FAF7F2 60%, rgba(250,247,242,0) 100%);
+            padding-bottom: 30px;
+            transition: opacity 0.5s ease;
+        }
+
+        .header-safe-zone * {
+            pointer-events: auto;
+        }
+
+        .photo-3d-element {
+            position: fixed;
+            background: #FFFFFF;
+            padding: 20px 20px 36px 20px;
+            box-shadow: 0 25px 70px rgba(15, 23, 42, 0.15);
+            border-radius: 6px;
+            width: 440px; 
+            max-width: 90vw;
+            cursor: pointer;
+            user-select: none;
+            transform-origin: center;
+            will-change: transform, opacity, left, top;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.3s;
+        }
+
+        .photo-3d-element:hover {
+            box-shadow: 0 35px 80px rgba(214, 175, 55, 0.4);
+        }
+
+        .img-container-3d {
+            width: 100%;
+            aspect-ratio: 4 / 3; 
+            overflow: hidden;
+            background-color: #F3EFE6;
+        }
+
+        .img-container-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .caption-3d {
+            font-family: 'Reenie Beanie', cursive;
+            font-size: 2.4rem; 
+            color: #1E293B;
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.1;
+        }
+
+        .photo-3d-element.inspected {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.2) rotate(0deg) !important;
+            z-index: 200000 !important;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+        }
+
+        .reveal-overlay-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1005; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .revealed-name {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 11rem;
+            color: #1E293B;
+            letter-spacing: 35px;
+            opacity: 0;
+            transform: scale(0.3);
+            will-change: transform, opacity, filter;
+            transition: transform 1.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1.2s ease, filter 1.2s ease;
+            filter: blur(15px);
+            margin-left: 35px;
+            text-align: center;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.06);
+        }
+
+        .revealed-name.active {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0px);
+        }
+
+        @media (max-width: 768px) {
+            .photo-3d-element { width: 310px; padding: 12px 12px 24px 12px; }
+            .caption-3d { font-size: 1.8rem; margin-top: 10px; }
+            .revealed-name { font-size: 4.5rem; letter-spacing: 15px; margin-left: 15px; }
+        }
+
+        #raw-source-data { display: none; }
+    </style>
+</head>
+<body>
+
+    <canvas id="stage-3d"></canvas>
+    <div id="universe-3d-container"></div>
+
+    <div class="reveal-overlay-container">
+        <h1 class="revealed-name" id="finale-text">MARA</h1>
+    </div>
+
+    <div class="header-safe-zone" id="navbar-header">
+        <nav class="floating-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="gallery.html" class="nav-link active">Gallery</a>
+            <a href="videos.html" class="nav-link">Videos</a>
+            <a href="streak.html" class="nav-link">Daily Journal</a>
+            <a href="messages.html" class="nav-link">Messages</a>
+        </nav>
+
+        <header class="page-header" style="margin-top: 20px;">
+            <h1>Memory Warp Space</h1>
+            <p class="page-subtitle">Scroll down memory lane. Tap any frame to inspect it.</p>
+        </header>
+    </div>
+
+    <div id="raw-source-data">
+        <div data-img="photos\0d09675b-0af8-42de-a36d-cd34e5edb575.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\2b4c2207-7d45-4d7e-87bf-52cb892f2b00.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\02c966f1-ea4f-46f5-af6c-fd1b6db0967d.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\5ea66c29-4285-4158-89ce-c53e0f53fcf1.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\6c706d26-bc0c-4f62-bc81-4677b76e2f28.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\8cf44413-6f9b-4fe3-9fae-56150b033c43.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\8e284d32-a64b-437f-bb09-bd51711fd780.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\09f535db-150c-405e-a869-5483d9d0bed0.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\10d9f40c-cb42-4b8a-9f24-4e2a7e332cd8.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\11e83108-2d51-4314-9146-748e2f6ba7e8.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\36d3a060-047a-4fc7-b858-4faaf9a76a8d.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\39b0b472-e54a-4f4a-8675-629ef8255a68.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\54fd31f8-818c-4ac2-b182-afd50d1d30f4.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\84e0fb93-dfc3-49c2-bbae-706054e4096d.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\101bc17c-7783-4b06-a9c2-f4dafbead5d4.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\541c6b37-1b96-47fd-880f-d404ea424ea6.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\4883aac9-1d8a-4e39-a16e-d0c999e94e23.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\25243e2d-37e1-42fb-8da6-c703c7b38d12.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\981595a4-b1fe-46ed-9016-7f918a0e1906.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\1360578d-5f81-48e1-923b-f2d4c777464e.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\62127693-2493-4f55-93f6-477cfe41963b.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\63395050-0d88-4208-bfc3-6bff1788e057.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\a50ff1bc-a54c-4f3e-9b2f-1dbf79f3ca98.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\a451c6e5-ceb0-4b51-9667-dc417460930e.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\b95d0593-0293-42e3-9f4f-ed47b724d40b.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\b8014353-06f2-498b-9f34-ef93e27d762c.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\c5ac2d1d-3a71-4750-b4aa-593a7604c743.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\c79b65c9-5968-498a-80ac-489adbaba32e.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\cb6cd8b3-b1b6-4142-b4a2-5bcf84385e22.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\d67c2c54-7b95-4a55-9ead-0620e297fa3d.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\e8cf0845-3e0f-4928-9d9c-3b7ead1bf8cc.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\e397a17e-2fab-4a62-adf8-c6b30735ff5d.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\ecf1e397-2e60-42d1-bf10-e8e237d39e64.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\ed485593-f631-4818-a63d-a5fdb3d3e671.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\ef1b1084-4e75-44eb-8775-0f484c28fa57.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\f011bcc6-dccc-4309-ab30-87816e88a891.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\f0237cbf-da6e-4ddd-b47e-7b4a5228132b.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\f705844c-c7df-44b6-8f3e-055a338a5f01.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\fa6df03a-b5c2-4152-9ec4-b7fbb26a6b05.jpg" data-cap="Launch day chaos!"></div>
+        <div data-img="photos\fd306007-abce-4dea-bdaa-31e81a0d3ba4.jpg" data-cap="Launch day chaos!"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("stage-3d");
+        const ctx = canvas.getContext("2d");
+        const universe = document.getElementById("universe-3d-container");
+        const rawData = document.querySelectorAll("#raw-source-data div");
+        const finaleText = document.getElementById("finale-text");
+        const navbarHeader = document.getElementById("navbar-header");
+
+        let hearts = [];
+        let photos3D = [];
+        let lastScrollY = window.scrollY;
+
+        let heartClickCount = 0;
+        let heroHeartBeatScale = 0;
+
+        const totalPhotos = rawData.length;
+        let columns = 3;
+        
+        function calculateLayoutMetrics() {
+            const w = window.innerWidth;
+            if (w < 768) columns = 1;
+            else if (w < 1200) columns = 2;
+            else columns = 3;
+        }
+
+        function resizeStage() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            calculateLayoutMetrics();
+        }
+        window.addEventListener("resize", resizeStage);
+
+        function getSafeScreenPosition(index, elWidth = 440, elHeight = 380) {
+            const padX = 60; 
+            const padTop = 200; 
+            const padBottom = 60;
+
+            const safeW = window.innerWidth - (elWidth + (padX * 2));
+            const safeH = window.innerHeight - (elHeight + padTop + padBottom);
+
+            const col = index % columns;
+            const laneWidth = Math.max(safeW, 1) / columns;
+
+            const targetX = padX + (col * laneWidth) + (Math.random() * (laneWidth * 0.3));
+            const targetY = padTop + (Math.random() * Math.max(safeH, 1));
+
+            return { x: targetX + (elWidth / 2), y: targetY + (elHeight / 2) };
+        }
+
+        function getEngineColor(count) {
+            if (count >= 10) return "rgba(239, 68, 68, ";
+            const r = Math.floor(214 + (25 * (count / 10)));
+            const g = Math.floor(175 - (131 * (count / 10)));
+            const b = Math.floor(55 + (13 * (count / 10)));
+            return `rgba(${r}, ${g}, ${b}, `;
+        }
+
+        class HeartObject3D {
+            constructor(spawnSpread = false) {
+                this.reset();
+                if (spawnSpread) {
+                    this.z = Math.random() * 2000;
+                    this.y = Math.random() * canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = 2000; 
+                this.baseSize = Math.random() * 15 + 20; 
+                this.driftX = (Math.random() - 0.5) * 0.3;
+                this.driftY = (Math.random() - 0.5) * 0.3;
+            }
+            update(scrollDelta, maxTunnelDepth, isEnding) {
+                if (isEnding) {
+                    this.z -= 1.0; 
+                    this.x += this.driftX;
+                    this.y += this.driftY;
+                    if (this.z <= 5) this.reset();
+                    return;
+                }
+                const baselineSpeed = 2.5; 
+                const responsiveSpeed = scrollDelta * 0.65;
+                this.z -= (baselineSpeed + responsiveSpeed);
+
+                if (this.z <= 10) this.reset();
+                if (this.z > maxTunnelDepth) this.z = 10;
+            }
+            draw() {
+                if (this.z > 900) return; 
+                const scale = 300 / this.z;
+                const projX = (this.x - canvas.width / 2) * scale + canvas.width / 2;
+                const projY = (this.y - canvas.height / 2) * scale + canvas.height / 2;
+
+                const finalSize = this.baseSize * scale; 
+                const alpha = Math.min(Math.max((900 - this.z) / 600, 0), 0.4); 
+
+                const colorPrefix = getEngineColor(heartClickCount);
+
+                ctx.save();
+                ctx.translate(projX, projY);
+                ctx.shadowBlur = 18;
+                ctx.shadowColor = colorPrefix + "0.6)";
+                ctx.fillStyle = colorPrefix + `${alpha})`;
+                
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-finalSize / 2, -finalSize / 2, -finalSize, +finalSize / 3, 0, finalSize);
+                ctx.bezierCurveTo(finalSize, +finalSize / 3, finalSize / 2, -finalSize / 2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class PhotoObject3D {
+            constructor(domElement, index) {
+                this.el = domElement;
+                this.index = index;
+                this.initialZ = 400 + (index * 650); 
+                this.z = this.initialZ;
+                
+                this.cardWidth = window.innerWidth < 768 ? 310 : 440;
+                this.cardHeight = window.innerWidth < 768 ? 250 : 380;
+
+                const pos = getSafeScreenPosition(this.index, this.cardWidth, this.cardHeight);
+                this.screenX = pos.x;
+                this.screenY = pos.y;
+                this.rotation = (Math.random() - 0.5) * 16;
+
+                this.orbitRadius = 80 + Math.random() * 180;
+                this.orbitSpeed = 0.008 + Math.random() * 0.015;
+                this.orbitAngle = Math.random() * Math.PI * 2;
+                this.orbitYPhase = Math.random() * Math.PI;
+            }
+
+            update(currentScroll, collapseProgress) {
+                if (this.el.classList.contains('inspected')) return;
+
+                this.cardWidth = window.innerWidth < 768 ? 310 : 440;
+                this.cardHeight = window.innerWidth < 768 ? 250 : 380;
+                this.z = this.initialZ - (currentScroll * 0.9);
+
+                let finalOpacity = 1;
+
+                if (collapseProgress > 0) {
+                    this.el.style.opacity = '0';
+                    this.el.style.display = 'none';
+                } 
+                else {
+                    if (this.z <= 15 || this.z > 1700) {
+                        this.el.style.display = 'none';
+                        return;
+                    }
+                    if (this.z > 1300) finalOpacity = (1700 - this.z) / 400; 
+                    if (this.z < 180) finalOpacity = (this.z - 15) / 165;
+
+                    const fovScale = 350 / this.z;
+                    const posX = (this.screenX - window.innerWidth / 2) * fovScale + window.innerWidth / 2;
+                    const posY = (this.screenY - window.innerHeight / 2) * fovScale + window.innerHeight / 2;
+                    
+                    this.el.style.left = `${posX - (this.cardWidth / 2)}px`;
+                    this.el.style.top = `${posY - (this.cardHeight / 2)}px`;
+                    this.el.style.transform = `scale(${fovScale * 0.8}) rotate(${this.rotation}deg)`;
+                    this.el.style.opacity = Math.max(0, Math.min(finalOpacity, 1));
+                    this.el.style.zIndex = Math.floor(15000 - this.z);
+                    this.el.style.display = 'flex';
+                }
+            }
+
+            drawAsSwarmParticle(progress) {
+                if (progress <= 0) return;
+
+                this.orbitAngle += this.orbitSpeed;
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+
+                const pullInFactor = 1 - (progress * 0.6); 
+                const currentRadius = this.orbitRadius * pullInFactor;
+
+                const pX = centerX + Math.cos(this.orbitAngle) * currentRadius;
+                const pY = centerY + Math.sin(this.orbitAngle + this.orbitYPhase) * (currentRadius * 0.4);
+
+                const pointSize = Math.max(2, 5 * (1 - progress));
+                const pointAlpha = Math.min(progress, 1 - (progress * 0.4));
+
+                const colorPrefix = getEngineColor(heartClickCount);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(pX, pY, pointSize, 0, Math.PI * 2);
+                ctx.fillStyle = colorPrefix + `${pointAlpha})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = heartClickCount >= 10 ? "#EF4444" : "#D6AF37";
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        calculateLayoutMetrics();
+        resizeStage();
+
+        rawData.forEach((src, idx) => {
+            const div = document.createElement("div");
+            div.className = "photo-3d-element";
+            div.innerHTML = `
+                <div class="img-container-3d"><img src="${src.dataset.img}"></div>
+                <p class="caption-3d">${src.dataset.cap}</p>
+            `;
+            universe.appendChild(div);
+            photos3D.push(new PhotoObject3D(div, idx));
+
+            div.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (div.classList.contains("inspected")) {
+                    div.classList.remove("inspected");
+                } else {
+                    document.querySelectorAll(".photo-3d-element").forEach(p => p.classList.remove("inspected"));
+                    div.classList.add("inspected");
+                }
+            });
+        });
+
+        window.addEventListener("click", () => {
+            document.querySelectorAll(".photo-3d-element").forEach(p => p.classList.remove("inspected"));
+        });
+
+        const totalMaxTunnelDepth = 400 + (totalPhotos * 650);
+        for (let i = 0; i < 45; i++) hearts.push(new HeartObject3D(true));
+
+        let collapseVal = 0;
+
+        function drawFinalHeroHeart(progress) {
+            if (progress <= 0) return;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            const baseRadius = window.innerWidth < 768 ? 90 : 160;
+            const targetHeartSize = (baseRadius + heroHeartBeatScale) * progress;
+            const alpha = Math.min(progress * 0.95, 0.95);
+            const colorPrefix = getEngineColor(heartClickCount);
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.shadowBlur = 50;
+            ctx.shadowColor = colorPrefix + `${progress})`;
+            ctx.fillStyle = colorPrefix + `${alpha})`;
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-targetHeartSize / 2, -targetHeartSize / 2, -targetHeartSize, +targetHeartSize / 3, 0, targetHeartSize);
+            ctx.bezierCurveTo(targetHeartSize, +targetHeartSize / 3, targetHeartSize / 2, -targetHeartSize / 2, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Expanded absolute coordinate radius space mapping for seamless touch tracking
+        window.addEventListener("click", (e) => {
+            if (collapseVal < 0.5) return; 
+
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const clickDist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+
+            // Broad click target zone handles all display sizes gracefully
+            if (clickDist < 180) {
+                heartClickCount++;
+                heroHeartBeatScale = window.innerWidth < 768 ? 40 : 75; 
+            }
+        });
+
+        function runEngine() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const currentScroll = window.scrollY;
+            
+            // STRICT PHOTO VERIFICATION SEQUENCE:
+            // Locate the exact current 3D position of the absolute final item in the array list
+            const finalPhotoItem = photos3D[totalPhotos - 1];
+            
+            let isEnding = false;
+
+            // Climax engine triggers ONLY when photo 40's depth (z) drops fully past front line (z <= 15)
+            if (finalPhotoItem && finalPhotoItem.z <= 15) {
+                isEnding = true;
+                
+                // Track transition rate smoothly past the final photo's clearance point
+                if (collapseVal < 1) {
+                    collapseVal += 0.04;
+                    if (collapseVal > 1) collapseVal = 1;
+                }
+
+                if (collapseVal > 0.5) {
+                    finaleText.classList.add("active");
+                    navbarHeader.style.opacity = "0";
+                    navbarHeader.style.pointerEvents = "none";
+                }
+            } 
+            else {
+                // If user scrolls backwards above the clearance line, roll back state gracefully
+                if (collapseVal > 0) {
+                    collapseVal -= 0.08;
+                    if (collapseVal < 0) collapseVal = 0;
+                }
+                finaleText.classList.remove("active");
+                navbarHeader.style.opacity = "1";
+                navbarHeader.style.pointerEvents = "auto";
+            }
+
+            if (heroHeartBeatScale > 0) {
+                heroHeartBeatScale -= heroHeartBeatScale * 0.10; // Smooth recovery speed
+                if (heroHeartBeatScale < 0.1) heroHeartBeatScale = 0;
+            }
+
+            // Engine updates
+            photos3D.forEach(photo => photo.update(currentScroll, collapseVal));
+            
+            let scrollDelta = currentScroll - lastScrollY;
+            lastScrollY = currentScroll;
+            if (Math.abs(scrollDelta) < 0.05) scrollDelta = 0;
+
+            hearts.forEach(heart => {
+                heart.update(scrollDelta, totalMaxTunnelDepth, isEnding);
+                heart.draw();
+            });
+
+            if (collapseVal > 0) {
+                photos3D.forEach(photo => photo.drawAsSwarmParticle(collapseVal));
+            }
+
+            if (collapseVal > 0.1) {
+                drawFinalHeroHeart(collapseVal);
+            }
+
+            requestAnimationFrame(runEngine);
+        }
+
+        runEngine();
+    </script>
+</body>
+</html>

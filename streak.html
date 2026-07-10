@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-Month Keepsake | Daily Journal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #FAF7F2;
+            color: #1E293B;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Enhanced Fine-Art Header Architecture */
+        .premium-header-container {
+            max-width: 1000px;
+            margin: 60px auto 40px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .header-meta-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #8B7E66;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .main-editorial-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 3.5rem;
+            color: #1E293B;
+            margin: 0 0 20px 0;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        .header-divider-line {
+            width: 60px;
+            height: 1px;
+            background-color: #D4AF37;
+            margin: 24px auto;
+            opacity: 0.6;
+        }
+
+        .page-subtitle-refined {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: #576574;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Sophisticated Editorial Dashboard */
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 800px;
+            margin: 20px auto 60px auto;
+            border-top: 1px solid rgba(30, 41, 59, 0.08);
+            border-bottom: 1px solid rgba(30, 41, 59, 0.08);
+            padding: 40px 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Delicate vertical divider line */
+        .stat-card:first-child::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background-color: rgba(30, 41, 59, 0.08);
+        }
+
+        .stat-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #8B7E66;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-count {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #1E293B;
+            line-height: 1;
+        }
+
+        .stat-timer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: #B45309; 
+            font-weight: 400;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* Minimal Editorial Dropzone */
+        .upload-dropzone {
+            background: #FFFFFF;
+            border: 1px solid rgba(30, 41, 59, 0.1);
+            border-radius: 4px;
+            padding: 50px 30px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px auto;
+            cursor: pointer;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .upload-dropzone:hover {
+            background: #FDFDFB;
+            border-color: #D4AF37;
+        }
+
+        .upload-dropzone.locked {
+            background: #F5F2EB;
+            border-color: rgba(30, 41, 59, 0.05);
+            cursor: not-allowed;
+        }
+
+        .upload-dropzone p {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            margin: 0 0 8px 0;
+            color: #1E293B;
+        }
+
+        .upload-dropzone span {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            color: #8B7E66;
+        }
+
+        #hidden-file-input {
+            display: none;
+        }
+
+        /* Fine Art Frame Photo Grid */
+        .streak-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        .streak-card {
+            background: #FFFFFF;
+            padding: 16px 16px 20px 16px;
+            border: 1px solid rgba(30, 41, 59, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+
+        .streak-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(139, 126, 102, 0.1);
+        }
+
+        .streak-img-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1; 
+            overflow: hidden;
+            background-color: #FAF7F2;
+        }
+
+        .streak-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .streak-date-badge {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: #1E293B;
+            text-align: center;
+            margin-top: 16px;
+            letter-spacing: 0.2px;
+        }
+
+        @media (max-width: 650px) {
+            .main-editorial-title {
+                font-size: 2.5rem;
+            }
+            .stats-dashboard {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 30px 0;
+            }
+            .stat-card:first-child::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="floating-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="videos.html" class="nav-link">Videos</a>
+        <a href="streak.html" class="nav-link active">Daily Journal</a>
+        <a href="messages.html" class="nav-link">Messages</a>
+    </nav>
+
+    <!-- Polished Luxury Header Section -->
+    <header class="premium-header-container">
+        <span class="header-meta-tag">CHAPTER II &mdash; THE ARCHIVE</span>
+        <h1 class="main-editorial-title">The Living Horizon</h1>
+        <div class="header-divider-line"></div>
+        <p class="page-subtitle-refined">A daily visual ritual to trace your steps, hold your presence close, and count the marks until you return.</p>
+    </header>
+
+    <main class="content-container">
+        
+        <!-- Minimal Dashboard Structure -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <span class="stat-label">Unbroken Streak</span>
+                <span class="stat-count" id="streak-display-value">0 Days</span>
+                <div class="stat-timer" id="upload-timer" style="display: none;">Next Unlock window opens in 00:00:00</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Days Until Return</span>
+                <span class="stat-count" id="countdown-display-value">-- Days</span>
+            </div>
+        </div>
+
+        <!-- Fine Border Upload Box -->
+        <div class="upload-dropzone" id="dropzone" onclick="handleDropzoneClick()">
+            <p id="dropzone-text">Document your day</p>
+            <span id="dropzone-subtext">Clicking uploads your singular photograph for today.</span>
+            <input type="file" id="hidden-file-input" accept="image/*">
+        </div>
+
+        <!-- Clean Editorial Memory Wall -->
+        <div class="streak-grid" id="streak-photo-wall"></div>
+    </main>
+
+    <script>
+        const fileInput = document.getElementById('hidden-file-input');
+        const photoWall = document.getElementById('streak-photo-wall');
+        const streakDisplay = document.getElementById('streak-display-value');
+        const countdownDisplay = document.getElementById('countdown-display-value');
+        const uploadTimer = document.getElementById('upload-timer');
+        const dropzone = document.getElementById('dropzone');
+        const dropzoneText = document.getElementById('dropzone-text');
+        const dropzoneSubtext = document.getElementById('dropzone-subtext');
+
+        const returnDate = new Date('2027-04-03T00:00:00');
+
+        let appState = JSON.parse(localStorage.getItem('farewellStreakState')) || {
+            streakCount: 0,
+            lastUploadDateString: null, 
+            photos: [] 
+        };
+
+        function saveState() {
+            localStorage.setItem('farewellStreakState', JSON.stringify(appState));
+        }
+
+        function getTodayDateString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function checkUploadStatus() {
+            const todayStr = getTodayDateString();
+            
+            if (appState.lastUploadDateString === todayStr) {
+                dropzone.classList.add('locked');
+                dropzoneText.innerText = "Today's journal entry is complete";
+                dropzoneSubtext.innerText = "Your photograph has been safely pinned to the horizon grid.";
+                uploadTimer.style.display = "block";
+            } else {
+                dropzone.classList.remove('locked');
+                dropzoneText.innerText = "Document your day";
+                dropzoneSubtext.innerText = "Clicking uploads your singular photograph for today.";
+                uploadTimer.style.display = "none";
+                
+                if (appState.lastUploadDateString) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
+                    
+                    if (appState.lastUploadDateString !== yesterdayStr) {
+                        appState.streakCount = 0;
+                        saveState();
+                    }
+                }
+            }
+            streakDisplay.innerText = `${appState.streakCount} Day${appState.streakCount === 1 ? '' : 's'}`;
+        }
+
+        function handleDropzoneClick() {
+            if (!dropzone.classList.contains('locked')) {
+                fileInput.click();
+            }
+        }
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const friendlyDate = new Date().toLocaleDateString('en-US', options);
+                
+                const newPhoto = {
+                    dataUrl: event.target.result,
+                    dateLabel: friendlyDate
+                };
+
+                appState.photos.unshift(newPhoto);
+                appState.streakCount++;
+                appState.lastUploadDateString = getTodayDateString();
+                
+                saveState();
+                renderPhotos();
+                checkUploadStatus();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function renderPhotos() {
+            photoWall.innerHTML = '';
+            appState.photos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = 'streak-card';
+                card.innerHTML = `
+                    <div class="streak-img-wrapper">
+                        <img src="${photo.dataUrl}" alt="Journal Entry">
+                    </div>
+                    <div class="streak-date-badge">${photo.dateLabel}</div>
+                `;
+                photoWall.appendChild(card);
+            });
+        }
+
+        function updateClocks() {
+            const now = new Date();
+
+            const timeDifference = returnDate.getTime() - now.getTime();
+            const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+            countdownDisplay.innerText = daysLeft > 0 ? `${daysLeft} Days` : "0 Days";
+
+            const nextMidnight = new Date();
+            nextMidnight.setHours(24, 0, 0, 0); 
+
+            const msToMidnight = nextMidnight.getTime() - now.getTime();
+            
+            const hours = Math.floor((msToMidnight % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((msToMidnight % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((msToMidnight % (1000 * 60)) / 1000);
+
+            const padding = num => String(num).padStart(2, '0');
+            uploadTimer.innerText = `NEXT LOCKER UNLOCKS IN ${padding(hours)}:${padding(minutes)}:${padding(seconds)}`;
+        }
+
+        renderPhotos();
+        checkUploadStatus();
+        updateClocks();
+        setInterval(updateClocks, 1000);
+    </script>
+</body>
+</html>

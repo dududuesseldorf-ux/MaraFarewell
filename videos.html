@@ -1,101 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>9-Month Chronicle | Videos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600&family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { background-color: #0F172A; color: #FFFFFF; }
-        .page-header h1 { color: #FFFFFF; }
-        .page-subtitle { color: #9CA3AF; }
+
+
         
         .theater-layout {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-            max-width: 900px;
-            margin: 0 auto;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(50px * var(--scaling-factor)) calc(40px * var(--scaling-factor));
+            align-items: start;
         }
+
+        .card-widescreen {
+            grid-column: span 2;
+            max-width: calc(850px * var(--scaling-factor));
+            justify-self: center;
+        }
+
         .cinema-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            background: #FFFFFF;
+            padding: calc(20px * var(--scaling-factor)) calc(20px * var(--scaling-factor)) calc(24px * var(--scaling-factor)) calc(20px * var(--scaling-factor));
+            box-shadow: 0 calc(25px * var(--scaling-factor)) calc(70px * var(--scaling-factor)) rgba(15, 23, 42, 0.08);
+            border-radius: calc(6px * var(--scaling-factor)); 
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            transition: border-color 0.4s, transform 0.4s;
+            transition: box-shadow 0.4s, transform 0.4s;
+            height: fit-content; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            border: none;
+            box-sizing: border-box;
         }
+        
         .cinema-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-4px);
+            transform: translateY(calc(-6px * var(--scaling-factor)));
+            box-shadow: 0 calc(35px * var(--scaling-factor)) calc(80px * var(--scaling-factor)) rgba(214, 175, 55, 0.25);
         }
+
         .video-canvas {
             position: relative;
             width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
+            background-color: #F3EFE6; 
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: calc(4px * var(--scaling-factor));
         }
-        .video-canvas img {
+        .video-canvas.ratio-16-9 { aspect-ratio: 16 / 9; }
+        .video-canvas.ratio-9-16 { aspect-ratio: 9 / 16; }
+
+        .video-canvas video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            opacity: 0.7;
-            transition: opacity 0.4s;
+            object-fit: cover; 
+            display: block;
         }
-        .cinema-card:hover .video-canvas img { opacity: 0.5; }
+        
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(250, 247, 242, 0.15);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s, backdrop-filter 0.4s;
+            z-index: 2;
+        }
+        .video-canvas.is-playing .video-overlay {
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0px);
+        }
         
         .cinema-play-btn {
-            position: absolute;
-            inset: 0; margin: auto;
-            width: 70px; height: 70px;
-            background: #FFFFFF;
+            width: calc(65px * var(--scaling-factor)); 
+            height: calc(65px * var(--scaling-factor));
+            background: #1E293B;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #0F172A; font-size: 1.5rem; padding-left: 4px;
-            box-shadow: 0 0 30px rgba(214, 175, 55, 0.3);
-            transition: transform 0.3s, background-color 0.3s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: #FAF7F2; 
+            font-size: calc(22px * var(--scaling-factor)); 
+            padding-left: calc(4px * var(--scaling-factor));
+            box-shadow: 0 calc(10px * var(--scaling-factor)) calc(30px * var(--scaling-factor)) rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, background-color 0.3s, color 0.3s;
         }
         .cinema-card:hover .cinema-play-btn {
             transform: scale(1.1);
-            background-color: var(--gold);
-            color: #0F172A;
+            background-color: #D6AF37;
+            color: #FFFFFF;
         }
-        .cinema-details { padding: 25px; background: rgba(15, 23, 42, 0.4); }
-        .cinema-details h3 { font-family: var(--font-heading); font-size: 1.4rem; color: #FFFFFF; }
-        .cinema-details p { color: #9CA3AF; font-size: 0.95rem; margin-top: 4px; }
+
+        .cinema-details { 
+            padding: calc(18px * var(--scaling-factor)) 0 calc(4px * var(--scaling-factor)) 0; 
+            background: transparent;
+            text-align: center;
+        }
+        .cinema-details h3 { 
+            font-family: 'Reenie Beanie', cursive;
+            font-size: calc(36px * var(--scaling-factor)); 
+            font-weight: 400;
+            color: #1E293B;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .cinema-card.coming-soon {
+            border: calc(2px * var(--scaling-factor)) dashed #E2E8F0;
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: none;
+        }
+        .cinema-card.coming-soon:hover {
+            border-color: #D6AF37;
+            background: #FFFFFF;
+            box-shadow: 0 calc(25px * var(--scaling-factor)) calc(70px * var(--scaling-factor)) rgba(15, 23, 42, 0.05);
+        }
+        .coming-soon-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: calc(15px * var(--scaling-factor));
+            background: linear-gradient(-45deg, #FDFBF7, #F3EFE6, #FAF7F2, #F3EFE6);
+            background-size: 400% 400%;
+            animation: gradientAmbient 12s ease infinite;
+        }
+        .coming-soon-icon {
+            font-size: calc(35px * var(--scaling-factor));
+            color: rgba(30, 41, 59, 0.15);
+        }
+        .coming-soon-badge {
+            background: transparent;
+            border: calc(1px * var(--scaling-factor)) solid #D6AF37;
+            color: #D6AF37;
+            padding: calc(4px * var(--scaling-factor)) calc(14px * var(--scaling-factor));
+            border-radius: calc(50px * var(--scaling-factor));
+            font-size: calc(12px * var(--scaling-factor));
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: calc(1px * var(--scaling-factor));
+        }
+
+        @keyframes gradientAmbient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
     </style>
 </head>
 <body>
-
     <nav class="floating-nav">
         <a href="index.html" class="nav-link">Home</a>
         <a href="gallery.html" class="nav-link">Gallery</a>
         <a href="videos.html" class="nav-link active">Videos</a>
         <a href="streak.html" class="nav-link">Daily Journal</a>
         <a href="messages.html" class="nav-link">Messages</a>
+        <a href="fanfic.html" class="nav-link">Fanfics</a>
     </nav>
 
     <header class="page-header">
         <h1>Moving Tapes</h1>
-        <p class="page-subtitle">Hit play to hear our voices and watch our best memories back.</p>
+        <p class="page-subtitle">Klicke auf Play, um unsere Stimmen zu hören und die besten Erinnerungen abzuspielen.</p>
     </header>
-
+    
     <main class="content-container">
         <div class="theater-layout">
-            <div class="cinema-card">
-                <div class="video-canvas">
-                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=900" alt="Funny Compilation">
-                    <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+            <div class="cinema-card card-widescreen">
+                <div class="video-canvas ratio-16-9" onclick="toggleVideo(this)">
+                    <div class="video-overlay">
+                        <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+                    </div>
+                    <video src="videos/WhatsApp Video 2026-07-08 at 17.51.31.mp4" controls preload="metadata"></video>
                 </div>
                 <div class="cinema-details">
-                    <h3>The Farewell Video Box</h3>
-                    <p>A collection of individual video messages recorded by everyone wishing you luck on this 9-month chapter.</p>
+                    <h3>Partyyy</h3>
+                </div>
+            </div>
+
+            <div class="cinema-card">
+                <div class="video-canvas ratio-9-16" onclick="toggleVideo(this)">
+                    <div class="video-overlay">
+                        <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+                    </div>
+                    <video src="videos/WhatsApp Video 2026-07-08 at 23.38.49.mp4" controls preload="metadata"></video>
+                </div>
+                <div class="cinema-details">
+                    <h3>FAREWELL</h3>
+                </div>
+            </div>
+
+            <div class="cinema-card">
+                <div class="video-canvas ratio-9-16" onclick="toggleVideo(this)">
+                    <div class="video-overlay">
+                        <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+                    </div>
+                    <video src="videos/WhatsApp Video 2026-07-11 at 21.26.46.mp4" controls preload="metadata"></video>
+                </div>
+                <div class="cinema-details">
+                    <h3>DÖNERRRRRR!!!</h3>
+                </div>
+            </div>
+
+            <div class="cinema-card">
+                <div class="video-canvas ratio-9-16" onclick="toggleVideo(this)">
+                    <div class="video-overlay">
+                        <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+                    </div>
+                    <video src="videos/WhatsApp Video 2026-07-11 at 21.18.53.mp4" controls preload="metadata"></video>
+                </div>
+                <div class="cinema-details">
+                    <h3>Late Night Snippets</h3>
+                </div>
+            </div>
+
+            <div class="cinema-card">
+                <div class="video-canvas ratio-9-16" onclick="toggleVideo(this)">
+                    <div class="video-overlay">
+                        <div class="cinema-play-btn"><i class="fas fa-play"></i></div>
+                    </div>
+                    <video src="videos/WhatsApp Video 2026-07-11 at 21.19.05.mp4" controls preload="metadata"></video>
+                </div>
+                <div class="cinema-details">
+                    <h3>Learning Buddies</h3>
+                </div>
+            </div>
+
+            <div class="cinema-card card-widescreen coming-soon">
+                <div class="video-canvas ratio-16-9 coming-soon-canvas">
+                    <div class="coming-soon-icon"><i class="fa-solid fa-film"></i></div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <div class="cinema-details">
+                    <h3>The Homecoming Reel</h3>
                 </div>
             </div>
         </div>
     </main>
 
+    <script>
+        function updateScaling() {
+            const baseWidth = window.innerWidth < 768 ? 430 : 1440;
+            const factor = window.innerWidth / baseWidth;
+            document.documentElement.style.setProperty('--scaling-factor', factor);
+        }
+        window.addEventListener('resize', updateScaling);
+        window.addEventListener('DOMContentLoaded', updateScaling);
+        updateScaling();
+
+        function toggleVideo(canvas) {
+            const currentVideo = canvas.querySelector('video');
+            if (!currentVideo) return;
+            if (currentVideo.paused) {
+                document.querySelectorAll('.video-canvas video').forEach(otherVideo => {
+                    if (otherVideo !== currentVideo && !otherVideo.paused) {
+                        otherVideo.pause();
+                    }
+                });
+                currentVideo.play();
+                canvas.classList.add('is-playing');
+            } else {
+                currentVideo.pause();
+                canvas.classList.remove('is-playing');
+            }
+        }
+    </script>
 </body>
 </html>

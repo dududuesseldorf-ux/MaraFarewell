@@ -1,40 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9-Month Chronicle | Messages</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+    <title>9-Month Chronicle | Message for Mara</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600&family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .wishing-wall {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+        
+
+        .message-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .note-card {
+
+        .big-note-card {
             background: #FFFFFF;
-            border-top: 3px solid var(--gold);
-            border-radius: 12px;
-            padding: 35px;
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.04);
+            padding: calc(45px * var(--scaling-factor)) calc(45px * var(--scaling-factor)) calc(55px * var(--scaling-factor)) calc(45px * var(--scaling-factor));
+            box-shadow: 0 calc(25px * var(--scaling-factor)) calc(70px * var(--scaling-factor)) rgba(15, 23, 42, 0.08);
+            border-radius: calc(6px * var(--scaling-factor));
             position: relative;
-            transition: transform 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
         }
-        .note-card:hover { transform: translateY(-5px); }
+
         .heart-stamp {
-            color: rgba(239, 68, 68, 0.12);
-            font-size: 2.5rem;
-            position: absolute; top: 25px; right: 25px;
+            color: rgba(239, 68, 68, 0.15);
+            font-size: calc(40px * var(--scaling-factor));
+            position: absolute; 
+            top: calc(25px * var(--scaling-factor)); 
+            right: calc(30px * var(--scaling-factor));
         }
+
         .note-body {
-            font-size: 1.05rem; line-height: 1.7;
-            color: #1E293B; font-style: italic; margin-bottom: 25px;
+            font-family: 'Inter', sans-serif;
+            font-size: calc(18px * var(--scaling-factor)); 
+            font-weight: 300;
+            line-height: 1.8;
+            color: #1E293B; 
+            margin-bottom: calc(40px * var(--scaling-factor));
+            margin-top: calc(20px * var(--scaling-factor));
+            text-align: left;
         }
+
         .note-signer {
-            font-family: var(--font-heading);
-            font-weight: 600; color: #0F172A; font-size: 1.1rem;
+            font-family: 'Reenie Beanie', cursive;
+            font-size: calc(45px * var(--scaling-factor));
+            color: #D6AF37; 
+            line-height: 1;
+        }
+
+        .floating-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
         }
     </style>
 </head>
@@ -46,27 +69,38 @@
         <a href="videos.html" class="nav-link">Videos</a>
         <a href="streak.html" class="nav-link">Daily Journal</a>
         <a href="messages.html" class="nav-link active">Messages</a>
+        <a href="fanfic.html" class="nav-link">Fanfics</a>
     </nav>
 
     <header class="page-header">
-        <h1>Letters For The Road</h1>
-        <p class="page-subtitle">Open these notes whenever you need a little reminder of home over the next 9 months.</p>
+        <h1>Post für den Weg</h1>
+        <p class="page-subtitle">Eine kleine Erinnerung an Zuhause, die dich durch die nächsten 9 Monate begleiten soll.</p>
     </header>
 
     <main class="content-container">
-        <div class="wishing-wall">
-            <div class="note-card">
+        <div class="message-container">
+            <div class="big-note-card">
                 <div class="heart-stamp"><i class="fas fa-heart"></i></div>
-                <p class="note-body">"9 months is going to fly by so quickly! Make sure to take loads of pictures, don't work too hard, and remember we are throwing a massive welcome-back party the second you step off the plane."</p>
-                <div class="note-signer">— Sarah</div>
-            </div>
-            <div class="note-card">
-                <div class="heart-stamp"><i class="fas fa-heart"></i></div>
-                <p class="note-body">"Wishing you the grandest adventure out there. Things won't be quite the same in the room without your jokes, but we are all so incredibly proud of you!"</p>
-                <div class="note-signer">— John</div>
+                <p class="note-body">
+                    Liebe Mara,<br><br>
+                    gute Reise und eine unvergessliche Zeit bei deinem 9-monatigen Abenteuer in Australien! Wir werden dich hier unendlich vermissen, aber wir sind gleichzeitig so unglaublich stolz auf dich und freuen uns riesig auf alles, was vor dir liegt.<br><br>
+                    Entdecke jeden Winkel, genieße die Sonne, reite die Wellen und sammle Erinnerungen, die ein Leben lang bleiben. Wann immer du mal Heimweh hast oder die Entfernung dir zu groß vorkommt, schau einfach auf diese Seite und denk daran, wie sehr du zu Hause geliebt wirst. Australien kann sich echt glücklich schätzen, dich zu haben!<br><br>
+                    Rock Down Under, pass gut auf dich auf – und wir stehen hier bereit, um dir die größte Willkommensparty aller Zeiten zu schmeicheln, sobald du wieder landest.
+                </p>
+                <div class="note-signer">In Liebe, deine Liebsten! ❤️</div>
             </div>
         </div>
     </main>
 
+    <script>
+        function updateScaling() {
+            const baseWidth = window.innerWidth < 768 ? 430 : 1440;
+            const factor = window.innerWidth / baseWidth;
+            document.documentElement.style.setProperty('--scaling-factor', factor);
+        }
+        window.addEventListener('resize', updateScaling);
+        window.addEventListener('DOMContentLoaded', updateScaling);
+        updateScaling();
+    </script>
 </body>
 </html>

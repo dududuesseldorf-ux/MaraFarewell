@@ -3,438 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9-Month Keepsake | Memory Streak</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Include Supabase Client Library -->
+    <title>Global Photo Streak</title>
+    <!-- Include Supabase CDN Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        html, body {
+        :root {
+            --primary: #ff4757;
+            --bg: #f1f2f6;
+            --card-bg: #ffffff;
+            --text: #2f3542;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 0;
-            background-color: #FAF7F2;
-            color: #1E293B;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Persistent Navigation Bar matching gallery.html */
-        .header-safe-zone {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100000;
-            background: linear-gradient(to bottom, #FAF7F2 70%, rgba(250,247,242,0) 100%);
-            padding-bottom: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 220px auto 100px auto;
-            padding: 0 40px;
-            box-sizing: border-box;
-        }
-
-        /* Dynamic Streak Center - Restored Elegance Layout */
-        .streak-card {
-            text-align: center;
-            margin-bottom: 80px;
-        }
-        .streak-label {
-            font-family: 'Inter', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 0.85rem;
-            color: #64748B;
-            font-weight: 500;
-        }
-        .streak-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 6rem;
-            font-weight: 400;
-            color: #1E293B;
-            margin: 10px 0;
-        }
-        .timer-display {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            color: #64748B;
-            letter-spacing: 1px;
-            font-weight: 400;
-        }
-
-        /* Journal Input Area - Clean Frame Aesthetic */
-        .journal-form {
-            background: #FFFFFF;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.05);
-            border-radius: 6px;
-            margin-bottom: 80px;
-            border: none;
-        }
-        .form-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 400;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        textarea {
-            width: 100%;
-            height: 140px;
-            border: 1px solid #E2E8F0;
-            background-color: #FAF8F5;
-            border-radius: 4px;
             padding: 20px;
-            font-family: inherit;
-            box-sizing: border-box;
-            resize: vertical;
-            margin-bottom: 25px;
-            font-size: 1rem;
-            color: #1E293B;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        textarea:focus {
-            border-color: #C5A880;
-        }
-        .form-actions {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
         }
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        h1 { margin-bottom: 5px; color: var(--primary); }
+        p { margin: 5px 0; color: #57606f; }
+
+        .streak-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+        }
+
+        .streak-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .timer {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2f3542;
+            background: #e4e7eb;
+            padding: 8px 15px;
+            border-radius: 20px;
             display: inline-block;
         }
-        .btn-secondary {
-            border: 1px solid #1E293B;
-            color: #1E293B;
-            background-color: transparent;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-secondary:hover {
-            background-color: #1E293B;
-            color: #FFFFFF;
-        }
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background: #1E293B;
-            color: #FFFFFF;
-            border: none;
-            padding: 14px 36px;
-            border-radius: 4px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-        .btn-primary:disabled {
-            background: #94A3B8;
-            cursor: not-allowed;
-        }
-        #file-preview {
-            font-size: 0.85rem;
-            color: #64748B;
-            margin-left: 15px;
-            font-family: 'Inter', sans-serif;
+
+        .upload-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            margin-bottom: 40px;
         }
 
-        /* Shared Timeline Feed matching 3x3 Frame Aesthetic */
-        .feed-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 40px;
+        .upload-box {
+            border: 2px dashed #ced6e0;
+            padding: 20px;
             text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
         }
-        #global-timeline-feed {
-            display: flex;
-            flex-direction: column;
-            gap: 50px;
+
+        .upload-box:hover { border-color: var(--primary); }
+        
+        #imageInput { display: none; }
+
+        #previewContainer {
+            margin-top: 15px;
+            display: none;
         }
-        .entry-card {
-            background: #FFFFFF;
-            padding: 30px 30px 45px 30px;
-            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
+
+        #previewImage {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            object-fit: cover;
         }
-        .entry-meta {
-            font-size: 0.85rem;
-            color: #94A3B8;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-        .entry-text {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: #334155;
-            margin-bottom: 10px;
-        }
-        .img-container-blueprint {
+
+        textarea {
             width: 100%;
-            margin-top: 20px;
-            background-color: #F3EFE6;
-            border-radius: 4px;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #ced6e0;
+            border-radius: 8px;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #ff6b81; }
+        button:disabled { background: #ced6e0; cursor: not-allowed; }
+
+        .feed-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .feed-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
             overflow: hidden;
         }
-        .entry-image {
-            width: 100%;
-            height: auto;
-            max-height: 600px;
-            object-fit: cover;
-            display: block;
+
+        .post-date {
+            padding: 12px 15px;
+            font-size: 0.85rem;
+            color: #747d8c;
+            background: #f8f9fa;
+            border-bottom: 1px solid #f1f2f6;
         }
 
-        @media (max-width: 768px) {
-            .container { margin-top: 160px; padding: 0 20px; }
-            .streak-number { font-size: 4rem; }
-            .entry-card { padding: 20px 20px 30px 20px; }
+        .post-image {
+            width: 100%;
+            display: block;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-text {
+            padding: 15px;
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
-    <!-- Persistent Header Navigation Bar -->
-    <div class="header-safe-zone">
-        <nav class="floating-nav">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="gallery.html" class="nav-link">Gallery</a>
-            <a href="streak.html" class="nav-link active">Daily Journal</a>
-            <a href="videos.html" class="nav-link">Videos</a>
-            <a href="messages.html" class="nav-link">Messages</a>
-        </nav>
+    <header>
+        <h1>Global Snap Streak</h1>
+        <p>Your personal streak tracker connected to a shared global feed! Upload a photo daily.</p>
+    </header>
+
+    <!-- Streak Tracker (Stored locally for your specific device) -->
+    <div class="streak-container">
+        <div>Your Personal Streak</div>
+        <div class="streak-count" id="streakDisplay">🔥 0</div>
+        <div class="timer" id="timerDisplay">Loading timer...</div>
     </div>
 
-    <div class="container">
-        <!-- Streak Header Component -->
-        <div class="streak-card">
-            <div class="streak-label">Our Memory Streak</div>
-            <div class="streak-number" id="streak-count">0 Days</div>
-            <div class="timer-display" id="streak-timer">Calculating running milestone...</div>
-        </div>
-
-        <!-- Clean Form Frame Wrapper -->
-        <div class="journal-form">
-            <h3 class="form-title">Write a New Entry</h3>
-            <textarea id="journal-input" placeholder="What's on your mind today? Share a moment..."></textarea>
-            
-            <div class="form-actions">
-                <div class="upload-btn-wrapper">
-                    <button class="btn-secondary">📎 Add Photo</button>
-                    <input type="file" id="image-input" accept="image/*" />
-                    <span id="file-preview"></span>
-                </div>
-                <button class="btn-primary" id="submit-entry-btn" onclick="saveNewCloudEntry()">Publish Memory</button>
+    <!-- Upload Form -->
+    <div class="upload-section">
+        <h3 style="margin-top:0;">Upload Today's Photo</h3>
+        
+        <div class="upload-box" onclick="document.getElementById('imageInput').click()">
+            <span id="uploadPrompt">📸 Click to select a photo</span>
+            <input type="file" id="imageInput" accept="image/*">
+            <div id="previewContainer">
+                <img id="previewImage" src="" alt="Preview">
             </div>
         </div>
 
-        <h3 class="feed-title">Our Shared Memories Timeline</h3>
-        <div id="global-timeline-feed">Loading permanent sync timeline...</div>
+        <textarea id="textInput" placeholder="Add a caption... (optional)"></textarea>
+        <button id="uploadBtn" onclick="uploadPost()">Upload & Post Globally</button>
+    </div>
+
+    <!-- Global Feed (Visible to all users) -->
+    <div class="feed-container">
+        <div class="feed-title">Global Live Feed</div>
+        <div id="feed">Loading feed from database...</div>
     </div>
 
     <script>
-        // REPLACE WITH YOUR EXACT SUPABASE DATA CODES
-        const SUPABASE_URL = "https://ajrckjjhcgrojvnbewyv.supabase.co/rest/v1/"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_tKDei5cRejpJpmH23_pTmA_csT6IbSj";
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let selectedImageFile = null;
+        // --- DATABASE CONNECTION CONFIG ---
+        const SUPABASE_URL = "https://kliuqjavxsvxrykpgxxe.supabase.co/rest/v1//"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsaXVxamF2eHN2eHJ5a3BneHhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY4MjUsImV4cCI6MjA5OTM2MjgyNX0.GL0QC_f867jfZU28BxfKkU74rv1NmmQJIh-UxdnIYc8";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        document.getElementById('image-input').addEventListener('change', function(e) {
-            if(e.target.files.length > 0) {
-                selectedImageFile = e.target.files[0];
-                document.getElementById('file-preview').innerText = `Selected: ${selectedImageFile.name}`;
+        // --- LOCAL STREAK CACHE ---
+        let localData = JSON.parse(localStorage.getItem('userStreakData')) || {
+            streak: 0,
+            lastUploadDate: null
+        };
+
+        function saveLocalData() {
+            localStorage.setItem('userStreakData', JSON.stringify(localData));
+        }
+
+        // --- DOM Elements ---
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const uploadPrompt = document.getElementById('uploadPrompt');
+        const textInput = document.getElementById('textInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const streakDisplay = document.getElementById('streakDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const feed = document.getElementById('feed');
+
+        let selectedImageBase64 = "";
+
+        // --- Image Selection File Processing ---
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Compress/Limit file sizes so database uploads stay quick
+                if (file.size > 2 * 1024 * 1024) { 
+                    alert("Please choose a photo under 2MB.");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageBase64 = e.target.result;
+                    previewImage.src = selectedImageBase64;
+                    previewContainer.style.display = 'block';
+                    uploadPrompt.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
             }
         });
 
-        function updateStreakAndTimer(entries) {
-            const streakElement = document.getElementById('streak-count');
-            const timerElement = document.getElementById('streak-timer');
+        function getTodayString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
 
-            if (!entries || entries.length === 0) {
-                streakElement.innerText = "0 Days";
-                timerElement.innerText = "Post a memory to begin our streak!";
+        function getYesterdayString() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        // --- Manage Streak Validation Engine ---
+        function checkStreakStatus() {
+            const today = getTodayString();
+            const yesterday = getYesterdayString();
+
+            if (!localData.lastUploadDate) {
+                localData.streak = 0;
+            } else if (localData.lastUploadDate === today || localData.lastUploadDate === yesterday) {
+                // Streak is safe
+            } else {
+                // Missed deadline window
+                localData.streak = 0;
+            }
+            saveLocalData();
+            updateUI();
+        }
+
+        function updateUI() {
+            streakDisplay.innerText = `🔥 ${localData.streak}`;
+            const today = getTodayString();
+
+            if (localData.lastUploadDate === today) {
+                uploadBtn.disabled = true;
+                uploadBtn.innerText = "Streak Secured For Today!";
+                imageInput.disabled = true;
+            } else {
+                uploadBtn.disabled = false;
+                uploadBtn.innerText = "Upload & Post Globally";
+                imageInput.disabled = false;
+            }
+        }
+
+        // --- Live Clock Counter Engine ---
+        function runCountdown() {
+            const now = new Date();
+            const todayStr = getTodayString();
+            const nextMidnight = new Date();
+            nextMidnight.setHours(24, 0, 0, 0); 
+
+            let displayMessage = (localData.lastUploadDate === todayStr) 
+                ? "Next upload unlocks in: " 
+                : "Time left to save streak: ";
+
+            const diff = nextMidnight - now;
+
+            if (diff <= 0) {
+                checkStreakStatus();
                 return;
             }
 
-            const dates = entries.map(e => new Date(e.created_at)).sort((a,b) => b - a);
-            const newestEntryDate = dates[0];
-            let currentStreak = 0;
-            let checkDate = new Date();
-            
-            const getDayString = (d) => d.toISOString().split('T')[0];
-            const postedDaysSet = new Set(entries.map(e => getDayString(new Date(e.created_at))));
+            const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+            const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+            const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
 
-            while (postedDaysSet.has(getDayString(checkDate))) {
-                currentStreak++;
-                checkDate.setDate(checkDate.getDate() - 1);
-            }
-
-            if (currentStreak === 0) {
-                let yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                while (postedDaysSet.has(getDayString(yesterday))) {
-                    currentStreak++;
-                    yesterday.setDate(yesterday.getDate() - 1);
-                }
-            }
-
-            streakElement.innerText = `${currentStreak} Day${currentStreak === 1 ? '' : 's'}`;
-
-            function tickCountdown() {
-                const innerNow = new Date();
-                const deadline = new Date(newestEntryDate.getTime() + (24 * 60 * 60 * 1000));
-                const remainingMs = deadline - innerNow;
-
-                if (remainingMs <= 0) {
-                    timerElement.innerText = "Streak Expired! Post now to start fresh.";
-                } else {
-                    const hours = Math.floor(remainingMs / (1000 * 60 * 60));
-                    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-                    timerElement.innerText = `Streak expires in: ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                }
-            }
-            tickCountdown();
-            setInterval(tickCountdown, 1000);
+            timerDisplay.innerText = `${displayMessage} ${hours}:${minutes}:${seconds}`;
         }
 
-        async function fetchLiveTimelineFeed() {
-            const feedContainer = document.getElementById('global-timeline-feed');
-            
-            const { data: entries, error } = await supabase
-                .from('journal_entries')
+        // --- DATABASE OPERATIONS (WRITE & READ) ---
+
+        // 1. Fetch Global feed for everyone
+        async function fetchGlobalFeed() {
+            const { data, error } = await _supabase
+                .from('global_streaks')
                 .select('*')
                 .order('created_at', { ascending: false });
 
             if (error) {
-                feedContainer.innerHTML = `<p style="color:red; text-align:center;">Sync Connection Idle. Check API settings configuration.</p>`;
+                console.error("Error reading live feed:", error);
                 return;
             }
 
-            updateStreakAndTimer(entries);
-
-            if (entries.length === 0) {
-                feedContainer.innerHTML = `<p style="color:#64748B; text-align:center; font-family:'Playfair Display'; font-style:italic;">Our timeline is empty. Write something beautiful above to begin.</p>`;
+            feed.innerHTML = "";
+            if (!data || data.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:#747d8c;'>No photos uploaded globally yet.</p>";
                 return;
             }
 
-            feedContainer.innerHTML = entries.map(item => {
-                const formattedDate = new Date(item.created_at).toLocaleDateString(undefined, {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
+            data.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'post-card';
                 
-                return `
-                    <div class="entry-card">
-                        <div class="entry-meta">${formattedDate}</div>
-                        <div class="entry-text">${escapeHtml(item.text_content)}</div>
-                        ${item.image_url ? `<div class="img-container-blueprint"><img src="${item.image_url}" class="entry-image"></div>` : ''}
-                    </div>
+                // Parse date timestamp beautifully
+                const formattedDate = new Date(post.created_at).toLocaleString();
+                let textHTML = post.caption ? `<div class="post-text">${post.caption}</div>` : '';
+
+                card.innerHTML = `
+                    <div class="post-date">${formattedDate}</div>
+                    <img class="post-image" src="${post.image_url}" alt="Global Snap">
+                    ${textHTML}
                 `;
-            }).join('');
-        }
-
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        // Helper fallback converter to process images directly to base64 strings if ImgBB fails
-        function convertFileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
+                feed.appendChild(card);
             });
         }
 
-        async function saveNewCloudEntry() {
-            const inputField = document.getElementById('journal-input');
-            const submitBtn = document.getElementById('submit-entry-btn');
-            const textContent = inputField.value.trim();
-
-            if (!textContent && !selectedImageFile) {
-                alert("Please add some text or attach an image first!");
+        // 2. Insert new post to live feed
+        async function uploadPost() {
+            if (!selectedImageBase64) {
+                alert("Please pick a picture first!");
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Publishing...";
+            uploadBtn.disabled = true;
+            uploadBtn.innerText = "Publishing to Feed...";
 
-            let finalUploadedImageUrl = null;
-
-            if (selectedImageFile) {
-                try {
-                    const formData = new FormData();
-                    formData.append('image', selectedImageFile);
-                    
-                    // Direct free ImgBB anonymous API target (replace key= parameter if you have a custom key)
-                    const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=cddc7b1bac50157a77c662e1916eb453', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const uploadResult = await uploadResponse.json();
-                    if (uploadResult.success && uploadResult.data && uploadResult.data.url) {
-                        finalUploadedImageUrl = uploadResult.data.url;
-                    } else {
-                        // High-reliability Fallback: Convert to Base64 data string directly if web API rejects execution
-                        finalUploadedImageUrl = await convertFileToBase64(selectedImageFile);
-                    }
-                } catch (imgErr) {
-                    console.warn("External image hosting failed. Reverting to structural fallback compression...");
-                    try {
-                        finalUploadedImageUrl = await convertFileToBase64(selectedImageFile);
-                    } catch(b64err) {
-                        console.error("Total image compilation crash: ", b64err);
-                    }
-                }
-            }
-
-            // Database write submission execution block
-            const { error } = await supabase
-                .from('journal_entries')
+            // Send payload data directly to server database 
+            const { error } = await _supabase
+                .from('global_streaks')
                 .insert([
-                    { text_content: textContent || "Shared Photo Update", image_url: finalUploadedImageUrl }
+                    { image_url: selectedImageBase64, caption: textInput.value.trim() }
                 ]);
 
             if (error) {
-                alert("Database Error: " + error.message);
-            } else {
-                inputField.value = "";
-                selectedImageFile = null;
-                document.getElementById('file-preview').innerText = "";
-                document.getElementById('image-input').value = "";
-                await fetchLiveTimelineFeed();
+                alert("Database submission failed: " + error.message);
+                uploadBtn.disabled = false;
+                updateUI();
+                return;
             }
 
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Publish Memory";
+            // If DB insert is successful, progress user streak
+            localData.streak += 1;
+            localData.lastUploadDate = getTodayString();
+            saveLocalData();
+
+            // Clear layout interface
+            selectedImageBase64 = "";
+            previewImage.src = "";
+            previewContainer.style.display = 'none';
+            uploadPrompt.style.display = 'block';
+            textInput.value = "";
+            imageInput.value = "";
+
+            updateUI();
+            fetchGlobalFeed(); // Instantly update view feed items
         }
 
-        // Auto initialization call
-        fetchLiveTimelineFeed();
+        // Initialize App Ecosystem
+        checkStreakStatus();
+        fetchGlobalFeed();
+        setInterval(runCountdown, 1000);
+        runCountdown();
     </script>
 </body>
 </html>

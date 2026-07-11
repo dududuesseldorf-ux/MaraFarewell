@@ -3,396 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9-Month Keepsake | Daily Journal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <title>9-Month Keepsake | Live Journal & Streak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Include Supabase Live Cloud Client Architecture -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #FAF7F2;
             color: #1E293B;
             font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
         }
-
-        /* Enhanced Fine-Art Header Architecture */
-        .premium-header-container {
-            max-width: 1000px;
-            margin: 60px auto 40px auto;
+        .container {
+            max-width: 800px;
+            margin: 160px auto 100px auto;
             padding: 0 20px;
-            text-align: center;
         }
-
-        .header-meta-tag {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: #8B7E66;
-            font-weight: 500;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .main-editorial-title {
-            font-family: 'Playfair Display', serif;
-            font-weight: 400;
-            font-size: 3.5rem;
-            color: #1E293B;
-            margin: 0 0 20px 0;
-            line-height: 1.1;
-            letter-spacing: -0.5px;
-        }
-
-        .header-divider-line {
-            width: 60px;
-            height: 1px;
-            background-color: #D4AF37;
-            margin: 24px auto;
-            opacity: 0.6;
-        }
-
-        .page-subtitle-refined {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.15rem;
-            color: #576574;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        /* Sophisticated Editorial Dashboard */
-        .stats-dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            max-width: 800px;
-            margin: 20px auto 60px auto;
-            border-top: 1px solid rgba(30, 41, 59, 0.08);
-            border-bottom: 1px solid rgba(30, 41, 59, 0.08);
-            padding: 40px 0;
-        }
-
-        .stat-card {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* Delicate vertical divider line */
-        .stat-card:first-child::after {
-            content: '';
-            position: absolute;
-            right: -20px;
-            top: 10%;
-            height: 80%;
-            width: 1px;
-            background-color: rgba(30, 41, 59, 0.08);
-        }
-
-        .stat-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #8B7E66;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-
-        .stat-count {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            font-weight: 400;
-            color: #1E293B;
-            line-height: 1;
-        }
-
-        .stat-timer {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.72rem;
-            color: #B45309; 
-            font-weight: 400;
-            margin-top: 14px;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-        }
-
-        /* Minimal Editorial Dropzone */
-        .upload-dropzone {
-            background: #FFFFFF;
-            border: 1px solid rgba(30, 41, 59, 0.1);
-            border-radius: 4px;
-            padding: 50px 30px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 60px auto;
-            cursor: pointer;
-            transition: background-color 0.4s ease, border-color 0.4s ease;
-        }
-
-        .upload-dropzone:hover {
-            background: #FDFDFB;
-            border-color: #D4AF37;
-        }
-
-        .upload-dropzone.locked {
-            background: #F5F2EB;
-            border-color: rgba(30, 41, 59, 0.05);
-            cursor: not-allowed;
-        }
-
-        .upload-dropzone p {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.2rem;
-            margin: 0 0 8px 0;
-            color: #1E293B;
-        }
-
-        .upload-dropzone span {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            color: #8B7E66;
-        }
-
-        #hidden-file-input {
-            display: none;
-        }
-
-        /* Fine Art Frame Photo Grid */
-        .streak-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 40px;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding-bottom: 80px;
-        }
-
         .streak-card {
             background: #FFFFFF;
-            padding: 16px 16px 20px 16px;
-            border: 1px solid rgba(30, 41, 59, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-        }
-
-        .streak-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(139, 126, 102, 0.1);
-        }
-
-        .streak-img-wrapper {
-            width: 100%;
-            aspect-ratio: 1 / 1; 
-            overflow: hidden;
-            background-color: #FAF7F2;
-        }
-
-        .streak-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .streak-date-badge {
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            color: #1E293B;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
             text-align: center;
-            margin-top: 16px;
-            letter-spacing: 0.2px;
+            margin-bottom: 40px;
+            border: 1px solid #EAE4D9;
         }
-
-        @media (max-width: 650px) {
-            .main-editorial-title {
-                font-size: 2.5rem;
-            }
-            .stats-dashboard {
-                grid-template-columns: 1fr;
-                gap: 30px;
-                padding: 30px 0;
-            }
-            .stat-card:first-child::after {
-                display: none;
-            }
+        .streak-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            color: #C5A880;
+            margin: 10px 0;
+        }
+        .timer-display {
+            font-size: 0.95rem;
+            color: #64748B;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        .journal-form {
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #EAE4D9;
+            margin-bottom: 40px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: inherit;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .btn-secondary {
+            border: 1px solid #C5A880;
+            color: #C5A880;
+            background-color: transparent;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #1E293B;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary:disabled {
+            background: #94A3B8;
+            cursor: not-allowed;
+        }
+        .feed-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .entry-card {
+            background: #FFFFFF;
+            border: 1px solid #EAE4D9;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+        .entry-meta {
+            font-size: 0.85rem;
+            color: #94A3B8;
+            margin-bottom: 12px;
+        }
+        .entry-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #334155;
+        }
+        .entry-image {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .header-safe-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100000;
+            background: linear-gradient(to bottom, #FAF7F2 70%, rgba(250,247,242,0) 100%);
+            padding-bottom: 20px;
+        }
+        #file-preview {
+            font-size: 0.85rem;
+            color: #64748B;
+            margin-top: 5px;
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <nav class="floating-nav">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="gallery.html" class="nav-link">Gallery</a>
-        <a href="videos.html" class="nav-link">Videos</a>
-        <a href="streak.html" class="nav-link active">Daily Journal</a>
-        <a href="messages.html" class="nav-link">Messages</a>
-    </nav>
+    <!-- Consistent Menu Overlay Context Layer Bar -->
+    <div class="header-safe-zone">
+        <nav class="floating-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="gallery.html" class="nav-link">Gallery</a>
+            <a href="streak.html" class="nav-link active">Daily Journal</a>
+            <a href="videos.html" class="nav-link">Videos</a>
+            <a href="messages.html" class="nav-link">Messages</a>
+        </nav>
+    </div>
 
-    <!-- Polished Luxury Header Section -->
-    <header class="premium-header-container">
-        <span class="header-meta-tag">CHAPTER II &mdash; THE ARCHIVE</span>
-        <h1 class="main-editorial-title">The Living Horizon</h1>
-        <div class="header-divider-line"></div>
-        <p class="page-subtitle-refined">A daily visual ritual to trace your steps, hold your presence close, and count the marks until you return.</p>
-    </header>
+    <div class="container">
+        <!-- Live Streak Display & Countdown Timer Module Box -->
+        <div class="streak-card">
+            <span style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight:600; color:#64748B;">Our Shared Memory Streak</span>
+            <div class="streak-number" id="streak-count">0 Days</div>
+            <div class="timer-display" id="streak-timer">Calculating next milestone...</div>
+        </div>
 
-    <main class="content-container">
-        
-        <!-- Minimal Dashboard Structure -->
-        <div class="stats-dashboard">
-            <div class="stat-card">
-                <span class="stat-label">Unbroken Streak</span>
-                <span class="stat-count" id="streak-display-value">0 Days</span>
-                <div class="stat-timer" id="upload-timer" style="display: none;">Next Unlock window opens in 00:00:00</div>
-            </div>
-
-            <div class="stat-card">
-                <span class="stat-label">Days Until Return</span>
-                <span class="stat-count" id="countdown-display-value">-- Days</span>
+        <!-- Global Storage Input Execution Form Node -->
+        <div class="journal-form">
+            <h3 style="margin-top:0; font-family:'Playfair Display', serif;">Write a New Entry</h3>
+            <textarea id="journal-input" placeholder="What's on your mind today? Write it down to lock it in the cloud database..."></textarea>
+            
+            <div class="form-actions">
+                <div class="upload-btn-wrapper">
+                    <button class="btn-secondary">📎 Add Photo</button>
+                    <input type="file" id="image-input" accept="image/*" />
+                    <span id="file-preview"></span>
+                </div>
+                <button class="btn-primary" id="submit-entry-btn" onclick="saveNewCloudEntry()">Publish Memory</button>
             </div>
         </div>
 
-        <!-- Fine Border Upload Box -->
-        <div class="upload-dropzone" id="dropzone" onclick="handleDropzoneClick()">
-            <p id="dropzone-text">Document your day</p>
-            <span id="dropzone-subtext">Clicking uploads your singular photograph for today.</span>
-            <input type="file" id="hidden-file-input" accept="image/*">
-        </div>
-
-        <!-- Clean Editorial Memory Wall -->
-        <div class="streak-grid" id="streak-photo-wall"></div>
-    </main>
+        <h3 class="feed-title">Our Shared Memories Timeline</h3>
+        <div id="global-timeline-feed">Loading permanent sync timeline...</div>
+    </div>
 
     <script>
-        const fileInput = document.getElementById('hidden-file-input');
-        const photoWall = document.getElementById('streak-photo-wall');
-        const streakDisplay = document.getElementById('streak-display-value');
-        const countdownDisplay = document.getElementById('countdown-display-value');
-        const uploadTimer = document.getElementById('upload-timer');
-        const dropzone = document.getElementById('dropzone');
-        const dropzoneText = document.getElementById('dropzone-text');
-        const dropzoneSubtext = document.getElementById('dropzone-subtext');
+        // CONNECT THIS TO YOUR SUPABASE ACCOUNT VALUES FOR TRUE WORLDWIDE GLOBAL SYNC
+        const SUPABASE_URL = "https://ajrckjjhcgrojvnbewyv.supabase.co/rest/v1/"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_tKDei5cRejpJpmH23_pTmA_csT6IbSj";
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const returnDate = new Date('2027-04-03T00:00:00');
+        let selectedImageFile = null;
 
-        let appState = JSON.parse(localStorage.getItem('farewellStreakState')) || {
-            streakCount: 0,
-            lastUploadDateString: null, 
-            photos: [] 
-        };
-
-        function saveState() {
-            localStorage.setItem('farewellStreakState', JSON.stringify(appState));
-        }
-
-        function getTodayDateString() {
-            const d = new Date();
-            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        }
-
-        function checkUploadStatus() {
-            const todayStr = getTodayDateString();
-            
-            if (appState.lastUploadDateString === todayStr) {
-                dropzone.classList.add('locked');
-                dropzoneText.innerText = "Today's journal entry is complete";
-                dropzoneSubtext.innerText = "Your photograph has been safely pinned to the horizon grid.";
-                uploadTimer.style.display = "block";
-            } else {
-                dropzone.classList.remove('locked');
-                dropzoneText.innerText = "Document your day";
-                dropzoneSubtext.innerText = "Clicking uploads your singular photograph for today.";
-                uploadTimer.style.display = "none";
-                
-                if (appState.lastUploadDateString) {
-                    const yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    const yesterdayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
-                    
-                    if (appState.lastUploadDateString !== yesterdayStr) {
-                        appState.streakCount = 0;
-                        saveState();
-                    }
-                }
+        // Visual change listener for handling local chosen files cleanly
+        document.getElementById('image-input').addEventListener('change', function(e) {
+            if(e.target.files.length > 0) {
+                selectedImageFile = e.target.files[0];
+                document.getElementById('file-preview').innerText = `Selected: ${selectedImageFile.name}`;
             }
-            streakDisplay.innerText = `${appState.streakCount} Day${appState.streakCount === 1 ? '' : 's'}`;
-        }
-
-        function handleDropzoneClick() {
-            if (!dropzone.classList.contains('locked')) {
-                fileInput.click();
-            }
-        }
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                const friendlyDate = new Date().toLocaleDateString('en-US', options);
-                
-                const newPhoto = {
-                    dataUrl: event.target.result,
-                    dateLabel: friendlyDate
-                };
-
-                appState.photos.unshift(newPhoto);
-                appState.streakCount++;
-                appState.lastUploadDateString = getTodayDateString();
-                
-                saveState();
-                renderPhotos();
-                checkUploadStatus();
-            };
-            reader.readAsDataURL(file);
         });
 
-        function renderPhotos() {
-            photoWall.innerHTML = '';
-            appState.photos.forEach(photo => {
-                const card = document.createElement('div');
-                card.className = 'streak-card';
-                card.innerHTML = `
-                    <div class="streak-img-wrapper">
-                        <img src="${photo.dataUrl}" alt="Journal Entry">
-                    </div>
-                    <div class="streak-date-badge">${photo.dateLabel}</div>
-                `;
-                photoWall.appendChild(card);
-            });
-        }
+        // Calculate Streaks and the dynamic live expiring counts
+        function updateStreakAndTimer(entries) {
+            const streakElement = document.getElementById('streak-count');
+            const timerElement = document.getElementById('streak-timer');
 
-        function updateClocks() {
+            if (!entries || entries.length === 0) {
+                streakElement.innerText = "0 Days";
+                timerElement.innerText = "Post a memory to begin our streak!";
+                return;
+            }
+
+            // Convert timestamps cleanly to client location domains
+            const dates = entries.map(e => new Date(e.created_at));
+            dates.sort((a,b) => b - a); // Newest first
+
             const now = new Date();
-
-            const timeDifference = returnDate.getTime() - now.getTime();
-            const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-            countdownDisplay.innerText = daysLeft > 0 ? `${daysLeft} Days` : "0 Days";
-
-            const nextMidnight = new Date();
-            nextMidnight.setHours(24, 0, 0, 0); 
-
-            const msToMidnight = nextMidnight.getTime() - now.getTime();
+            const newestEntryDate = dates[0];
             
-            const hours = Math.floor((msToMidnight % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((msToMidnight % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((msToMidnight % (1000 * 60)) / 1000);
+            // Calculate remaining milliseconds before the 24h entry frame window lapses
+            const timeDiffMs = now - newestEntryDate;
+            const hoursSinceLastPost = timeDiffMs / (1000 * 60 * 60);
 
-            const padding = num => String(num).padStart(2, '0');
-            uploadTimer.innerText = `NEXT LOCKER UNLOCKS IN ${padding(hours)}:${padding(minutes)}:${padding(seconds)}`;
+            // Calculate current running consecutive days streak count
+            let currentStreak = 0;
+            let checkDate = new Date();
+            
+            // Format to strip hour markers for pure calendar comparisons
+            const getDayString = (d) => d.toISOString().split('T')[0];
+            const postedDaysSet = new Set(entries.map(e => getDayString(new Date(e.created_at))));
+
+            while (postedDaysSet.has(getDayString(checkDate))) {
+                currentStreak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            }
+
+            // Fallback check if they haven't posted today yet, check if they posted yesterday
+            if (currentStreak === 0) {
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                while (postedDaysSet.has(getDayString(yesterday))) {
+                    currentStreak++;
+                    yesterday.setDate(yesterday.getDate() - 1);
+                }
+            }
+
+            streakElement.innerText = `${currentStreak} Day${currentStreak === 1 ? '' : 's'}`;
+
+            // Real-Time Interval Countdown calculations logic loops
+            function tickCountdown() {
+                const innerNow = new Date();
+                // Target window deadline is 24 hours from the absolute newest memory log
+                const deadline = new Date(newestEntryDate.getTime() + (24 * 60 * 60 * 1000));
+                const remainingMs = deadline - innerNow;
+
+                if (remainingMs <= 0) {
+                    timerElement.innerText = "Streak Expired! Post now to start a new loop.";
+                    timerElement.style.color = "#EF4444";
+                } else {
+                    const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+                    
+                    timerElement.innerText = `Streak expires in: ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+                    timerElement.style.color = "#64748B";
+                }
+            }
+
+            tickCountdown();
+            setInterval(tickCountdown, 1000);
         }
 
-        renderPhotos();
-        checkUploadStatus();
-        updateClocks();
-        setInterval(updateClocks, 1000);
+        // Fetch completely real-time live entries array from database cluster
+        async function fetchLiveTimelineFeed() {
+            const feedContainer = document.getElementById('global-timeline-feed');
+            
+            const { data: entries, error } = await supabase
+                .from('journal_entries')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                feedContainer.innerHTML = `<p style="color:red;">Sync Error: ${error.message}</p>`;
+                return;
+            }
+
+            updateStreakAndTimer(entries);
+
+            if (entries.length === 0) {
+                feedContainer.innerHTML = `<p style="color:#64748B; text-align:center;">The database is clean. Be the first to publish a worldwide synchronized memory card panel!</p>`;
+                return;
+            }
+
+            feedContainer.innerHTML = entries.map(item => {
+                const formattedDate = new Date(item.created_at).toLocaleDateString(undefined, {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                
+                return `
+                    <div class="entry-card">
+                        <div class="entry-meta">${formattedDate}</div>
+                        <div class="entry-text">${escapeHtml(item.text_content)}</div>
+                        ${item.image_url ? `<img src="${item.image_url}" class="entry-image" alt="Memory Image">` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Safe secure string parser tool logic
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Image hosting engine + global network upload insertion function block
+        async function saveNewCloudEntry() {
+            const inputField = document.getElementById('journal-input');
+            const submitBtn = document.getElementById('submit-entry-btn');
+            const textContent = inputField.value.trim();
+
+            if (!textContent && !selectedImageFile) {
+                alert("Please add some text or attach an image first!");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Uploading to Cloud...";
+
+            let finalUploadedImageUrl = null;
+
+            // Secure web image storage proxy engine pipeline handler configuration
+            if (selectedImageFile) {
+                try {
+                    const formData = new FormData();
+                    formData.append('image', selectedImageFile);
+                    
+                    // Upload anonymously to a permanent free image CDN endpoint (ImgBB API or similar)
+                    // For direct plug-and-play simplicity, we use the free unauthenticated single-use upload pipeline
+                    const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=YOUR_FREE_IMGBB_API_KEY_HERE', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const uploadResult = await uploadResponse.json();
+                    if (uploadResult.success) {
+                        finalUploadedImageUrl = uploadResult.data.url;
+                    } else {
+                        console.error("Image hosting processing failed, falling back to pure textual logging parameters.");
+                    }
+                } catch (imgErr) {
+                    console.error("Hosting Network execution failed: ", imgErr);
+                }
+            }
+
+            // Insert newly built element parameters straight to live Postgres tables globally
+            const { error } = await supabase
+                .from('journal_entries')
+                .insert([
+                    { text_content: textContent || "Shared Photo Update", image_url: finalUploadedImageUrl }
+                ]);
+
+            if (error) {
+                alert("Database Error: " + error.message);
+            } else {
+                // Clear input form UI layers
+                inputField.value = "";
+                selectedImageFile = null;
+                document.getElementById('file-preview').innerText = "";
+                document.getElementById('image-input').value = "";
+                // Refresh globally synced timeline automatically
+                await fetchLiveTimelineFeed();
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Publish Memory";
+        }
+
+        // Initialize display loop automatically on load
+        fetchLiveTimelineFeed();
     </script>
 </body>
 </html>

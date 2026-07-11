@@ -3,66 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9-Month Keepsake | Live Journal & Streak</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <title>9-Month Keepsake | Memory Streak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Include Supabase Live Cloud Client Architecture -->
+    <!-- Include Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
             background-color: #FAF7F2;
             color: #1E293B;
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* Persistent Navigation Bar matching gallery.html */
+        .header-safe-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100000;
+            background: linear-gradient(to bottom, #FAF7F2 70%, rgba(250,247,242,0) 100%);
+            padding-bottom: 20px;
+        }
+
         .container {
-            max-width: 800px;
-            margin: 160px auto 100px auto;
-            padding: 0 20px;
+            max-width: 900px;
+            margin: 220px auto 100px auto;
+            padding: 0 40px;
+            box-sizing: border-box;
         }
+
+        /* Dynamic Streak Center - Restored Elegance Layout */
         .streak-card {
-            background: #FFFFFF;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
             text-align: center;
-            margin-bottom: 40px;
-            border: 1px solid #EAE4D9;
+            margin-bottom: 80px;
+        }
+        .streak-label {
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.85rem;
+            color: #64748B;
+            font-weight: 500;
         }
         .streak-number {
             font-family: 'Playfair Display', serif;
-            font-size: 5rem;
-            font-weight: 600;
-            color: #C5A880;
+            font-size: 6rem;
+            font-weight: 400;
+            color: #1E293B;
             margin: 10px 0;
         }
         .timer-display {
-            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
             color: #64748B;
             letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 500;
-            margin-top: 5px;
+            font-weight: 400;
         }
+
+        /* Journal Input Area - Clean Frame Aesthetic */
         .journal-form {
             background: #FFFFFF;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #EAE4D9;
-            margin-bottom: 40px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.05);
+            border-radius: 6px;
+            margin-bottom: 80px;
+            border: none;
+        }
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-top: 0;
+            margin-bottom: 20px;
         }
         textarea {
             width: 100%;
-            height: 120px;
+            height: 140px;
             border: 1px solid #E2E8F0;
-            border-radius: 6px;
-            padding: 15px;
+            background-color: #FAF8F5;
+            border-radius: 4px;
+            padding: 20px;
             font-family: inherit;
             box-sizing: border-box;
             resize: vertical;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             font-size: 1rem;
+            color: #1E293B;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus {
+            border-color: #C5A880;
         }
         .form-actions {
             display: flex;
@@ -75,13 +110,19 @@
             display: inline-block;
         }
         .btn-secondary {
-            border: 1px solid #C5A880;
-            color: #C5A880;
+            border: 1px solid #1E293B;
+            color: #1E293B;
             background-color: transparent;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 4px;
             font-weight: 500;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #1E293B;
+            color: #FFFFFF;
         }
         .upload-btn-wrapper input[type=file] {
             font-size: 100px;
@@ -95,66 +136,86 @@
             background: #1E293B;
             color: #FFFFFF;
             border: none;
-            padding: 12px 28px;
-            border-radius: 6px;
+            padding: 14px 36px;
+            border-radius: 4px;
             font-weight: 500;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
         }
         .btn-primary:disabled {
             background: #94A3B8;
             cursor: not-allowed;
         }
+        #file-preview {
+            font-size: 0.85rem;
+            color: #64748B;
+            margin-left: 15px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Shared Timeline Feed matching 3x3 Frame Aesthetic */
         .feed-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        #global-timeline-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
         }
         .entry-card {
             background: #FFFFFF;
-            border: 1px solid #EAE4D9;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+            padding: 30px 30px 45px 30px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
         }
         .entry-meta {
             font-size: 0.85rem;
             color: #94A3B8;
-            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
         .entry-text {
-            font-size: 1.05rem;
-            line-height: 1.6;
+            font-size: 1.1rem;
+            line-height: 1.7;
             color: #334155;
+            margin-bottom: 10px;
+        }
+        .img-container-blueprint {
+            width: 100%;
+            margin-top: 20px;
+            background-color: #F3EFE6;
+            border-radius: 4px;
+            overflow: hidden;
         }
         .entry-image {
             width: 100%;
-            max-height: 450px;
+            height: auto;
+            max-height: 600px;
             object-fit: cover;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-        .header-safe-zone {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100000;
-            background: linear-gradient(to bottom, #FAF7F2 70%, rgba(250,247,242,0) 100%);
-            padding-bottom: 20px;
-        }
-        #file-preview {
-            font-size: 0.85rem;
-            color: #64748B;
-            margin-top: 5px;
             display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container { margin-top: 160px; padding: 0 20px; }
+            .streak-number { font-size: 4rem; }
+            .entry-card { padding: 20px 20px 30px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Consistent Menu Overlay Context Layer Bar -->
+    <!-- Persistent Header Navigation Bar -->
     <div class="header-safe-zone">
         <nav class="floating-nav">
             <a href="index.html" class="nav-link">Home</a>
@@ -166,17 +227,17 @@
     </div>
 
     <div class="container">
-        <!-- Live Streak Display & Countdown Timer Module Box -->
+        <!-- Streak Header Component -->
         <div class="streak-card">
-            <span style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight:600; color:#64748B;">Our Shared Memory Streak</span>
+            <div class="streak-label">Our Memory Streak</div>
             <div class="streak-number" id="streak-count">0 Days</div>
-            <div class="timer-display" id="streak-timer">Calculating next milestone...</div>
+            <div class="timer-display" id="streak-timer">Calculating running milestone...</div>
         </div>
 
-        <!-- Global Storage Input Execution Form Node -->
+        <!-- Clean Form Frame Wrapper -->
         <div class="journal-form">
-            <h3 style="margin-top:0; font-family:'Playfair Display', serif;">Write a New Entry</h3>
-            <textarea id="journal-input" placeholder="What's on your mind today? Write it down to lock it in the cloud database..."></textarea>
+            <h3 class="form-title">Write a New Entry</h3>
+            <textarea id="journal-input" placeholder="What's on your mind today? Share a moment..."></textarea>
             
             <div class="form-actions">
                 <div class="upload-btn-wrapper">
@@ -193,15 +254,13 @@
     </div>
 
     <script>
-        // CONNECT THIS TO YOUR SUPABASE ACCOUNT VALUES FOR TRUE WORLDWIDE GLOBAL SYNC
+        // REPLACE WITH YOUR EXACT SUPABASE DATA CODES
         const SUPABASE_URL = "https://ajrckjjhcgrojvnbewyv.supabase.co/rest/v1/"; 
         const SUPABASE_ANON_KEY = "sb_publishable_tKDei5cRejpJpmH23_pTmA_csT6IbSj";
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         let selectedImageFile = null;
 
-        // Visual change listener for handling local chosen files cleanly
         document.getElementById('image-input').addEventListener('change', function(e) {
             if(e.target.files.length > 0) {
                 selectedImageFile = e.target.files[0];
@@ -209,7 +268,6 @@
             }
         });
 
-        // Calculate Streaks and the dynamic live expiring counts
         function updateStreakAndTimer(entries) {
             const streakElement = document.getElementById('streak-count');
             const timerElement = document.getElementById('streak-timer');
@@ -220,22 +278,11 @@
                 return;
             }
 
-            // Convert timestamps cleanly to client location domains
-            const dates = entries.map(e => new Date(e.created_at));
-            dates.sort((a,b) => b - a); // Newest first
-
-            const now = new Date();
+            const dates = entries.map(e => new Date(e.created_at)).sort((a,b) => b - a);
             const newestEntryDate = dates[0];
-            
-            // Calculate remaining milliseconds before the 24h entry frame window lapses
-            const timeDiffMs = now - newestEntryDate;
-            const hoursSinceLastPost = timeDiffMs / (1000 * 60 * 60);
-
-            // Calculate current running consecutive days streak count
             let currentStreak = 0;
             let checkDate = new Date();
             
-            // Format to strip hour markers for pure calendar comparisons
             const getDayString = (d) => d.toISOString().split('T')[0];
             const postedDaysSet = new Set(entries.map(e => getDayString(new Date(e.created_at))));
 
@@ -244,7 +291,6 @@
                 checkDate.setDate(checkDate.getDate() - 1);
             }
 
-            // Fallback check if they haven't posted today yet, check if they posted yesterday
             if (currentStreak === 0) {
                 let yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
@@ -256,31 +302,24 @@
 
             streakElement.innerText = `${currentStreak} Day${currentStreak === 1 ? '' : 's'}`;
 
-            // Real-Time Interval Countdown calculations logic loops
             function tickCountdown() {
                 const innerNow = new Date();
-                // Target window deadline is 24 hours from the absolute newest memory log
                 const deadline = new Date(newestEntryDate.getTime() + (24 * 60 * 60 * 1000));
                 const remainingMs = deadline - innerNow;
 
                 if (remainingMs <= 0) {
-                    timerElement.innerText = "Streak Expired! Post now to start a new loop.";
-                    timerElement.style.color = "#EF4444";
+                    timerElement.innerText = "Streak Expired! Post now to start fresh.";
                 } else {
                     const hours = Math.floor(remainingMs / (1000 * 60 * 60));
                     const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-                    
                     timerElement.innerText = `Streak expires in: ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                    timerElement.style.color = "#64748B";
                 }
             }
-
             tickCountdown();
             setInterval(tickCountdown, 1000);
         }
 
-        // Fetch completely real-time live entries array from database cluster
         async function fetchLiveTimelineFeed() {
             const feedContainer = document.getElementById('global-timeline-feed');
             
@@ -290,14 +329,14 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                feedContainer.innerHTML = `<p style="color:red;">Sync Error: ${error.message}</p>`;
+                feedContainer.innerHTML = `<p style="color:red; text-align:center;">Sync Connection Idle. Check API settings configuration.</p>`;
                 return;
             }
 
             updateStreakAndTimer(entries);
 
             if (entries.length === 0) {
-                feedContainer.innerHTML = `<p style="color:#64748B; text-align:center;">The database is clean. Be the first to publish a worldwide synchronized memory card panel!</p>`;
+                feedContainer.innerHTML = `<p style="color:#64748B; text-align:center; font-family:'Playfair Display'; font-style:italic;">Our timeline is empty. Write something beautiful above to begin.</p>`;
                 return;
             }
 
@@ -310,18 +349,26 @@
                     <div class="entry-card">
                         <div class="entry-meta">${formattedDate}</div>
                         <div class="entry-text">${escapeHtml(item.text_content)}</div>
-                        ${item.image_url ? `<img src="${item.image_url}" class="entry-image" alt="Memory Image">` : ''}
+                        ${item.image_url ? `<div class="img-container-blueprint"><img src="${item.image_url}" class="entry-image"></div>` : ''}
                     </div>
                 `;
             }).join('');
         }
 
-        // Safe secure string parser tool logic
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Image hosting engine + global network upload insertion function block
+        // Helper fallback converter to process images directly to base64 strings if ImgBB fails
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         async function saveNewCloudEntry() {
             const inputField = document.getElementById('journal-input');
             const submitBtn = document.getElementById('submit-entry-btn');
@@ -333,35 +380,39 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerText = "Uploading to Cloud...";
+            submitBtn.innerText = "Publishing...";
 
             let finalUploadedImageUrl = null;
 
-            // Secure web image storage proxy engine pipeline handler configuration
             if (selectedImageFile) {
                 try {
                     const formData = new FormData();
                     formData.append('image', selectedImageFile);
                     
-                    // Upload anonymously to a permanent free image CDN endpoint (ImgBB API or similar)
-                    // For direct plug-and-play simplicity, we use the free unauthenticated single-use upload pipeline
-                    const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=YOUR_FREE_IMGBB_API_KEY_HERE', {
+                    // Direct free ImgBB anonymous API target (replace key= parameter if you have a custom key)
+                    const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=cddc7b1bac50157a77c662e1916eb453', {
                         method: 'POST',
                         body: formData
                     });
                     
                     const uploadResult = await uploadResponse.json();
-                    if (uploadResult.success) {
+                    if (uploadResult.success && uploadResult.data && uploadResult.data.url) {
                         finalUploadedImageUrl = uploadResult.data.url;
                     } else {
-                        console.error("Image hosting processing failed, falling back to pure textual logging parameters.");
+                        // High-reliability Fallback: Convert to Base64 data string directly if web API rejects execution
+                        finalUploadedImageUrl = await convertFileToBase64(selectedImageFile);
                     }
                 } catch (imgErr) {
-                    console.error("Hosting Network execution failed: ", imgErr);
+                    console.warn("External image hosting failed. Reverting to structural fallback compression...");
+                    try {
+                        finalUploadedImageUrl = await convertFileToBase64(selectedImageFile);
+                    } catch(b64err) {
+                        console.error("Total image compilation crash: ", b64err);
+                    }
                 }
             }
 
-            // Insert newly built element parameters straight to live Postgres tables globally
+            // Database write submission execution block
             const { error } = await supabase
                 .from('journal_entries')
                 .insert([
@@ -371,12 +422,10 @@
             if (error) {
                 alert("Database Error: " + error.message);
             } else {
-                // Clear input form UI layers
                 inputField.value = "";
                 selectedImageFile = null;
                 document.getElementById('file-preview').innerText = "";
                 document.getElementById('image-input').value = "";
-                // Refresh globally synced timeline automatically
                 await fetchLiveTimelineFeed();
             }
 
@@ -384,7 +433,7 @@
             submitBtn.innerText = "Publish Memory";
         }
 
-        // Initialize display loop automatically on load
+        // Auto initialization call
         fetchLiveTimelineFeed();
     </script>
 </body>

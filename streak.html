@@ -129,17 +129,16 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            transition: background 0.2s;
         }
 
         button:hover { background: #ff6b81; }
         button:disabled { background: #ced6e0; cursor: not-allowed; }
 
-        /* Spinner Loading CSS */
         .spinner {
             width: 20px;
             height: 20px;
@@ -259,7 +258,7 @@
 
         let selectedImageBase64 = "";
 
-        // --- Local Image Selection Processing (Shows on web instantly) ---
+        // --- Local Image Selection Processing ---
         imageInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
@@ -290,30 +289,45 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
-        // --- Pull Global Streak State directly from Server Database ---
+        // --- UPGRADED: SELF-HEALING STREAK STATE ENGINE ---
         async function syncGlobalStreakState() {
             const today = getTodayString();
             const yesterday = getYesterdayString();
 
-            const { data, error } = await _supabase
+            let { data, error } = await _supabase
                 .from('global_streak_counter')
                 .select('*')
-                .eq('id', 1)
-                .single();
+                .eq('id', 1);
 
             if (error) {
-                console.error("Error reading streak rules data:", error);
+                console.error("Database connection error:", error);
+                streakDisplay.innerText = "🔥 Connection Blocked";
+                timerDisplay.innerText = "Please turn off RLS on the global_streak_counter table inside Supabase.";
                 return;
             }
 
-            currentStreakCount = data.current_streak;
-            globalLastUploadDate = data.last_upload_date;
+            // Create initial row automatically if missing
+            if (!data || data.length === 0) {
+                const { data: insertedData, error: insertError } = await _supabase
+                    .from('global_streak_counter')
+                    .insert([{ id: 1, current_streak: 0, last_upload_date: null }])
+                    .select();
+                
+                if (insertError) {
+                    console.error("Could not initialize streak row:", insertError);
+                    return;
+                }
+                data = insertedData;
+            }
 
-            // Check if streak was lost globally (Missed yesterday completely)
+            const streakRow = data[0];
+            currentStreakCount = streakRow.current_streak;
+            globalLastUploadDate = streakRow.last_upload_date;
+
+            // Check if streak was lost globally
             if (globalLastUploadDate && globalLastUploadDate !== today && globalLastUploadDate !== yesterday) {
                 currentStreakCount = 0;
                 globalLastUploadDate = null;
-                // Silently reset server values to zero
                 await _supabase.from('global_streak_counter').update({ current_streak: 0, last_upload_date: null }).eq('id', 1);
             }
 
@@ -335,7 +349,6 @@
             }
         }
 
-        // --- Live Clock Counter Engine ---
         function runCountdown() {
             const now = new Date();
             const todayStr = getTodayString();
@@ -393,21 +406,18 @@
             });
         }
 
-        // --- Post Action to Database (With Loading states and Alerts) ---
         async function uploadPost() {
             if (!selectedImageBase64) {
                 alert("Please select a photo first!");
                 return;
             }
 
-            // Set loading interface animation active
             uploadBtn.disabled = true;
             btnSpinner.style.display = "block";
             btnText.innerText = "Uploading to Database...";
 
             const today = getTodayString();
 
-            // 1. Double check database state to make sure someone didn't upload while page was open
             const { data: currentCounter } = await _supabase.from('global_streak_counter').select('*').eq('id', 1).single();
             if (currentCounter.last_upload_date === today) {
                 alert("Someone else just secured the streak a moment ago!");
@@ -417,7 +427,6 @@
                 return;
             }
 
-            // 2. Insert image into global feed
             const { error: postError } = await _supabase
                 .from('global_streaks')
                 .insert([{ image_url: selectedImageBase64, caption: textInput.value.trim() }]);
@@ -428,7 +437,6 @@
                 return;
             }
 
-            // 3. Update the shared global streak calculation logic
             let nextStreakValue = currentCounter.last_upload_date === getYesterdayString() ? currentCounter.current_streak + 1 : 1;
             
             const { error: streakError } = await _supabase
@@ -442,7 +450,6 @@
                 return;
             }
 
-            // Success Pop up
             alert("🎉 Success! Your daily photo has been posted and the streak has increased for everyone!");
             
             resetForm();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Photo Streak</title>
+    <title>Global Shared Photo Streak</title>
     <!-- Include Supabase CDN Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -82,6 +82,11 @@
             cursor: pointer;
             margin-bottom: 15px;
             transition: border-color 0.3s;
+            position: relative;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .upload-box:hover { border-color: var(--primary); }
@@ -89,7 +94,7 @@
         #imageInput { display: none; }
 
         #previewContainer {
-            margin-top: 15px;
+            width: 100%;
             display: none;
         }
 
@@ -98,6 +103,8 @@
             max-height: 300px;
             border-radius: 8px;
             object-fit: cover;
+            display: block;
+            margin: 0 auto;
         }
 
         textarea {
@@ -123,10 +130,29 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         button:hover { background: #ff6b81; }
         button:disabled { background: #ced6e0; cursor: not-allowed; }
+
+        /* Spinner Loading CSS */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         .feed-container {
             width: 100%;
@@ -172,37 +198,40 @@
 <body>
 
     <header>
-        <h1>Global Snap Streak</h1>
-        <p>Your personal streak tracker connected to a shared global feed! Upload a photo daily.</p>
+        <h1>Global Group Streak</h1>
+        <p>One shared community streak! Anyone can upload once a day to keep the fire burning for everyone.</p>
     </header>
 
-    <!-- Streak Tracker (Stored locally for your specific device) -->
+    <!-- Global Streak Counter -->
     <div class="streak-container">
-        <div>Your Personal Streak</div>
-        <div class="streak-count" id="streakDisplay">🔥 0</div>
-        <div class="timer" id="timerDisplay">Loading timer...</div>
+        <div>Global Community Streak</div>
+        <div class="streak-count" id="streakDisplay">🔥 Loading...</div>
+        <div class="timer" id="timerDisplay">Syncing clocks...</div>
     </div>
 
-    <!-- Upload Form -->
+    <!-- Upload Section -->
     <div class="upload-section">
-        <h3 style="margin-top:0;">Upload Today's Photo</h3>
+        <h3 style="margin-top:0;">Today's Submission</h3>
         
         <div class="upload-box" onclick="document.getElementById('imageInput').click()">
             <span id="uploadPrompt">📸 Click to select a photo</span>
             <input type="file" id="imageInput" accept="image/*">
             <div id="previewContainer">
-                <img id="previewImage" src="" alt="Preview">
+                <img id="previewImage" src="" alt="Local Preview">
             </div>
         </div>
 
         <textarea id="textInput" placeholder="Add a caption... (optional)"></textarea>
-        <button id="uploadBtn" onclick="uploadPost()">Upload & Post Globally</button>
+        <button id="uploadBtn" onclick="uploadPost()">
+            <div class="spinner" id="btnSpinner"></div>
+            <span id="btnText">Upload & Post Globally</span>
+        </button>
     </div>
 
-    <!-- Global Feed (Visible to all users) -->
+    <!-- Global Feed -->
     <div class="feed-container">
         <div class="feed-title">Global Live Feed</div>
-        <div id="feed">Loading feed from database...</div>
+        <div id="feed">Connecting to database...</div>
     </div>
 
     <script>
@@ -211,15 +240,9 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsaXVxamF2eHN2eHJ5a3BneHhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY4MjUsImV4cCI6MjA5OTM2MjgyNX0.GL0QC_f867jfZU28BxfKkU74rv1NmmQJIh-UxdnIYc8";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- LOCAL STREAK CACHE ---
-        let localData = JSON.parse(localStorage.getItem('userStreakData')) || {
-            streak: 0,
-            lastUploadDate: null
-        };
-
-        function saveLocalData() {
-            localStorage.setItem('userStreakData', JSON.stringify(localData));
-        }
+        // --- GLOBAL CACHE VALUES ---
+        let currentStreakCount = 0;
+        let globalLastUploadDate = null;
 
         // --- DOM Elements ---
         const imageInput = document.getElementById('imageInput');
@@ -228,19 +251,21 @@
         const uploadPrompt = document.getElementById('uploadPrompt');
         const textInput = document.getElementById('textInput');
         const uploadBtn = document.getElementById('uploadBtn');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnText = document.getElementById('btnText');
         const streakDisplay = document.getElementById('streakDisplay');
         const timerDisplay = document.getElementById('timerDisplay');
         const feed = document.getElementById('feed');
 
         let selectedImageBase64 = "";
 
-        // --- Image Selection File Processing ---
+        // --- Local Image Selection Processing (Shows on web instantly) ---
         imageInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
-                // Compress/Limit file sizes so database uploads stay quick
-                if (file.size > 2 * 1024 * 1024) { 
-                    alert("Please choose a photo under 2MB.");
+                if (file.size > 2.5 * 1024 * 1024) { 
+                    alert("This image file is too large! Please choose a file under 2.5MB.");
+                    this.value = "";
                     return;
                 }
                 const reader = new FileReader();
@@ -265,34 +290,47 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
-        // --- Manage Streak Validation Engine ---
-        function checkStreakStatus() {
+        // --- Pull Global Streak State directly from Server Database ---
+        async function syncGlobalStreakState() {
             const today = getTodayString();
             const yesterday = getYesterdayString();
 
-            if (!localData.lastUploadDate) {
-                localData.streak = 0;
-            } else if (localData.lastUploadDate === today || localData.lastUploadDate === yesterday) {
-                // Streak is safe
-            } else {
-                // Missed deadline window
-                localData.streak = 0;
+            const { data, error } = await _supabase
+                .from('global_streak_counter')
+                .select('*')
+                .eq('id', 1)
+                .single();
+
+            if (error) {
+                console.error("Error reading streak rules data:", error);
+                return;
             }
-            saveLocalData();
+
+            currentStreakCount = data.current_streak;
+            globalLastUploadDate = data.last_upload_date;
+
+            // Check if streak was lost globally (Missed yesterday completely)
+            if (globalLastUploadDate && globalLastUploadDate !== today && globalLastUploadDate !== yesterday) {
+                currentStreakCount = 0;
+                globalLastUploadDate = null;
+                // Silently reset server values to zero
+                await _supabase.from('global_streak_counter').update({ current_streak: 0, last_upload_date: null }).eq('id', 1);
+            }
+
             updateUI();
         }
 
         function updateUI() {
-            streakDisplay.innerText = `🔥 ${localData.streak}`;
+            streakDisplay.innerText = `🔥 ${currentStreakCount}`;
             const today = getTodayString();
 
-            if (localData.lastUploadDate === today) {
+            if (globalLastUploadDate === today) {
                 uploadBtn.disabled = true;
-                uploadBtn.innerText = "Streak Secured For Today!";
+                btnText.innerText = "Streak Secured For Today!";
                 imageInput.disabled = true;
             } else {
                 uploadBtn.disabled = false;
-                uploadBtn.innerText = "Upload & Post Globally";
+                btnText.innerText = "Upload & Post Globally";
                 imageInput.disabled = false;
             }
         }
@@ -304,14 +342,14 @@
             const nextMidnight = new Date();
             nextMidnight.setHours(24, 0, 0, 0); 
 
-            let displayMessage = (localData.lastUploadDate === todayStr) 
+            let displayMessage = (globalLastUploadDate === todayStr) 
                 ? "Next upload unlocks in: " 
                 : "Time left to save streak: ";
 
             const diff = nextMidnight - now;
 
             if (diff <= 0) {
-                checkStreakStatus();
+                syncGlobalStreakState();
                 return;
             }
 
@@ -322,9 +360,6 @@
             timerDisplay.innerText = `${displayMessage} ${hours}:${minutes}:${seconds}`;
         }
 
-        // --- DATABASE OPERATIONS (WRITE & READ) ---
-
-        // 1. Fetch Global feed for everyone
         async function fetchGlobalFeed() {
             const { data, error } = await _supabase
                 .from('global_streaks')
@@ -346,7 +381,6 @@
                 const card = document.createElement('div');
                 card.className = 'post-card';
                 
-                // Parse date timestamp beautifully
                 const formattedDate = new Date(post.created_at).toLocaleString();
                 let textHTML = post.caption ? `<div class="post-text">${post.caption}</div>` : '';
 
@@ -359,49 +393,81 @@
             });
         }
 
-        // 2. Insert new post to live feed
+        // --- Post Action to Database (With Loading states and Alerts) ---
         async function uploadPost() {
             if (!selectedImageBase64) {
-                alert("Please pick a picture first!");
+                alert("Please select a photo first!");
                 return;
             }
 
+            // Set loading interface animation active
             uploadBtn.disabled = true;
-            uploadBtn.innerText = "Publishing to Feed...";
+            btnSpinner.style.display = "block";
+            btnText.innerText = "Uploading to Database...";
 
-            // Send payload data directly to server database 
-            const { error } = await _supabase
-                .from('global_streaks')
-                .insert([
-                    { image_url: selectedImageBase64, caption: textInput.value.trim() }
-                ]);
+            const today = getTodayString();
 
-            if (error) {
-                alert("Database submission failed: " + error.message);
-                uploadBtn.disabled = false;
-                updateUI();
+            // 1. Double check database state to make sure someone didn't upload while page was open
+            const { data: currentCounter } = await _supabase.from('global_streak_counter').select('*').eq('id', 1).single();
+            if (currentCounter.last_upload_date === today) {
+                alert("Someone else just secured the streak a moment ago!");
+                resetForm();
+                syncGlobalStreakState();
+                fetchGlobalFeed();
                 return;
             }
 
-            // If DB insert is successful, progress user streak
-            localData.streak += 1;
-            localData.lastUploadDate = getTodayString();
-            saveLocalData();
+            // 2. Insert image into global feed
+            const { error: postError } = await _supabase
+                .from('global_streaks')
+                .insert([{ image_url: selectedImageBase64, caption: textInput.value.trim() }]);
 
-            // Clear layout interface
+            if (postError) {
+                alert("❌ Upload Failed: " + postError.message);
+                resetLoadingState();
+                return;
+            }
+
+            // 3. Update the shared global streak calculation logic
+            let nextStreakValue = currentCounter.last_upload_date === getYesterdayString() ? currentCounter.current_streak + 1 : 1;
+            
+            const { error: streakError } = await _supabase
+                .from('global_streak_counter')
+                .update({ current_streak: nextStreakValue, last_upload_date: today })
+                .eq('id', 1);
+
+            if (streakError) {
+                alert("❌ Post uploaded, but streak increment tracking crashed.");
+                resetLoadingState();
+                return;
+            }
+
+            // Success Pop up
+            alert("🎉 Success! Your daily photo has been posted and the streak has increased for everyone!");
+            
+            resetForm();
+            syncGlobalStreakState();
+            fetchGlobalFeed();
+        }
+
+        function resetLoadingState() {
+            uploadBtn.disabled = false;
+            btnSpinner.style.display = "none";
+            btnText.innerText = "Upload & Post Globally";
+        }
+
+        function resetForm() {
             selectedImageBase64 = "";
             previewImage.src = "";
             previewContainer.style.display = 'none';
             uploadPrompt.style.display = 'block';
             textInput.value = "";
             imageInput.value = "";
-
-            updateUI();
-            fetchGlobalFeed(); // Instantly update view feed items
+            btnSpinner.style.display = "none";
         }
 
         // Initialize App Ecosystem
-        checkStreakStatus();
+        syncGlobalStreakState();
         fetchGlobalFeed();
         setInterval(runCountdown, 1000);
         runCountdown();

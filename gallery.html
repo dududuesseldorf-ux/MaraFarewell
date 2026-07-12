@@ -444,7 +444,7 @@
             });
         });
 
-        window.addEventListener("click", () => {
+        window.addEventListener("pointerdown", () => {
             document.querySelectorAll(".photo-3d-element").forEach(p => p.classList.remove("inspected"));
         });
 
@@ -473,7 +473,7 @@
             ctx.restore();
         }
 
-        window.addEventListener("click", (e) => {
+        window.addEventListener("pointerdown", (e) => {
             if (collapseVal < 0.5) return; 
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
